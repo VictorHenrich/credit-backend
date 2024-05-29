@@ -1,19 +1,22 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import Employee from './employee.entity';
 
 @Entity({
-    name: "company"
+  name: 'company',
 })
-export default class Company{
-    @PrimaryGeneratedColumn('uuid')
-    uuid: string
+export default class Company {
+  @PrimaryGeneratedColumn('uuid')
+  uuid: string;
 
-    @PrimaryGeneratedColumn('increment')
-    id: number
+  @PrimaryGeneratedColumn('increment')
+  id: number;
 
-    @Column({nullable: false})
-    companyName: string
+  @Column({ nullable: false })
+  companyName: string;
 
-    @Column({nullable: false})
-    fantasyName: string
+  @Column({ nullable: false })
+  fantasyName: string;
+
+  @OneToMany(() => Employee, (employee: Employee) => employee.company)
+  employees: Employee[];
 }
