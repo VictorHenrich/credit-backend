@@ -7,12 +7,6 @@ import CompanyService from 'src/services/company.service';
 @Module({
   controllers: [CompanyController],
   providers: [CompanyService],
-  imports: [
-    TypeOrmModule.forFeature([Company]),
-    TypeOrmModule.forRoot({
-      migrate: true,
-      migrations: [Company],
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([Company])],
 })
 export default class CompaniesModule {}

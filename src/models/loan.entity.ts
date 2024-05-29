@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import Employee from './employee.entity';
 
 @Entity({
@@ -18,5 +24,6 @@ export default class Loan {
   minimumScore: number;
 
   @OneToMany(() => Employee, (employee: Employee) => employee.loan)
+  @JoinColumn()
   employees: Employee[];
 }

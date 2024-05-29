@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import Loan from './loan.entity';
 import Company from './company.entity';
 
@@ -34,5 +40,6 @@ export default class Employee {
   loan: Loan;
 
   @ManyToOne(() => Company, (companye: Company) => companye.employees)
+  @JoinColumn()
   company: Company;
 }
