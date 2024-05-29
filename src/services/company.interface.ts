@@ -1,8 +1,10 @@
-import { IModelUUID } from './common.interfaces';
+import { ModelUUIDProps } from './common.interfaces';
 
-export interface ICompanyBody {
+export interface CompanyBodyProps {
   companyName: string;
   fantasyName: string;
 }
 
-export interface ICompanyEntity extends Partial<ICompanyBody>, IModelUUID {}
+export interface CompanyEntityProps
+  extends Partial<CompanyBodyProps>,
+    ModelUUIDProps {}

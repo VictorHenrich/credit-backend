@@ -7,7 +7,7 @@ import {
   IEmployeeEntity,
   IEmployeeAuth,
 } from './employee.interface';
-import { IModelUUID } from './common.interfaces';
+import { ModelUUIDProps } from './common.interfaces';
 import CryptUtils from 'src/utils/crypt';
 
 @Injectable()
@@ -30,11 +30,11 @@ export default class EmployeeService {
     await this.employeeRepository.update({ uuid }, props);
   }
 
-  async deleteEmployee({ uuid }: IModelUUID): Promise<void> {
+  async deleteEmployee({ uuid }: ModelUUIDProps): Promise<void> {
     await this.employeeRepository.delete({ uuid });
   }
 
-  async findEmployee({ uuid }: IModelUUID): Promise<Employee> {
+  async findEmployee({ uuid }: ModelUUIDProps): Promise<Employee> {
     return await this.employeeRepository.findOneByOrFail({ uuid });
   }
 

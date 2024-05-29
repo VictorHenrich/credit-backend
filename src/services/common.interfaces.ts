@@ -1,3 +1,3 @@
-export interface IModelUUID {
+export interface ModelUUIDProps {
   uuid: string;
 }

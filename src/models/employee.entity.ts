@@ -18,7 +18,7 @@ export default class Employee {
   @Column({ nullable: false })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: 0 })
   wage: number;
 
   @Column({ default: 0 })

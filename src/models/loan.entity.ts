@@ -14,7 +14,7 @@ export default class Loan {
   @Column({ nullable: false })
   description: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, default: 0 })
   minimumScore: number;
 
   @OneToMany(() => Employee, (employee: Employee) => employee.loan)

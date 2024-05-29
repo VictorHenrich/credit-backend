@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import CompanyService from './services/company.service';
-import CompanyController from './controllers/company.controller';
+import CompaniesModule from './modules/company.module';
+import EmployeesModule from './modules/employee.module';
+import LoansModule from './modules/loan.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
@@ -13,12 +18,12 @@ import CompanyController from './controllers/company.controller';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [],
       synchronize: true,
       autoLoadEntities: true,
     }),
+    CompaniesModule,
+    EmployeesModule,
+    LoansModule,
   ],
-  controllers: [CompanyController],
-  providers: [CompanyService],
 })
 export class AppModule {}

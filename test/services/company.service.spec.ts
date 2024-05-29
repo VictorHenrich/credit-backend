@@ -38,7 +38,7 @@ describe('CompanyService', () => {
       .spyOn(companyRepository, 'findOneByOrFail')
       .mockResolvedValue(mockCompany);
     jest.spyOn(companyRepository, 'find').mockResolvedValue([mockCompany]);
-    jest.spyOn(companyRepository, 'update').mockResolvedValue(undefined);
+    jest.spyOn(companyRepository, 'save').mockResolvedValue(undefined);
     jest.spyOn(companyRepository, 'create').mockReturnValue(mockCompany);
   });
 
@@ -53,9 +53,11 @@ describe('CompanyService', () => {
   });
 
   it('Company update test', async () => {
-    const result: void = await companyService.updateCompany(mockCompany);
+    const companyUpdated: Company =
+      await companyService.updateCompany(mockCompany);
 
-    expect(result).toBeUndefined();
+    expect(companyUpdated).not.toBeNull();
+    expect(companyUpdated).not.toBeDefined();
   });
 
   it('Company capture test', async () => {
