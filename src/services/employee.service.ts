@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import bcrypt from 'bcrypt';
 import Employee from 'src/models/employee.entity';
 import {
   IEmployeeBody,
@@ -9,6 +8,7 @@ import {
   IEmployeeAuth,
 } from './employee.interface';
 import { IModelUUID } from './common.interfaces';
+import CryptUtils from 'src/utils/crypt';
 
 @Injectable()
 export default class EmployeeService {
@@ -18,7 +18,7 @@ export default class EmployeeService {
   ) {}
 
   async createEmployee(props: IEmployeeBody): Promise<Employee> {
-    const password: string = bcrypt.hash(props.password, 10);
+    const password: string = await CryptUtils.createHash(props.password);
 
     return await this.employeeRepository.create({ ...props, password });
   }
@@ -43,7 +43,7 @@ export default class EmployeeService {
   }
 
   async changeAuth({ uuid, username, password }: IEmployeeAuth): Promise<void> {
-    const passwordCrypted: string = bcrypt.hash(password, 10);
+    const passwordCrypted: string = await CryptUtils.createHash(password);
 
     await this.employeeRepository.update(
       { uuid },
@@ -61,6 +61,6 @@ export default class EmployeeService {
       username,
     });
 
-    return bcrypt.compare(password, employee.password);
+    return await CryptUtils.compareHash(password, employee.password);
   }
 }
