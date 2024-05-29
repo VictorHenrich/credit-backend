@@ -1,23 +1,12 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import Loan from './loan.entity';
 import Company from './company.entity';
+import BaseModel from './model.base';
 
 @Entity({
   name: 'employee',
 })
-export default class Employee {
-  @PrimaryGeneratedColumn('uuid')
-  uuid: string;
-
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
+export default class Employee extends BaseModel {
   @Column({ nullable: false })
   name: string;
 
@@ -40,6 +29,5 @@ export default class Employee {
   loan: Loan;
 
   @ManyToOne(() => Company, (companye: Company) => companye.employees)
-  @JoinColumn()
   company: Company;
 }

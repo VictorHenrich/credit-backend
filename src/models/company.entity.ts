@@ -1,22 +1,11 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import Employee from './employee.entity';
+import BaseModel from './model.base';
 
 @Entity({
   name: 'company',
 })
-export default class Company {
-  @PrimaryGeneratedColumn('uuid')
-  uuid: string;
-
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
+export default class Company extends BaseModel {
   @Column({ nullable: false })
   companyName: string;
 
@@ -24,6 +13,5 @@ export default class Company {
   fantasyName: string;
 
   @OneToMany(() => Employee, (employee: Employee) => employee.company)
-  @JoinColumn()
   employees: Employee[];
 }
