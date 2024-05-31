@@ -1,5 +1,5 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
-import Loan from './loan.entity';
+import { Entity, Column, ManyToOne, ManyToMany } from 'typeorm';
+import EmployeeLoan from './employeeLoan.entity';
 import Company from './company.entity';
 import { UserBaseModel } from './base';
 
@@ -8,13 +8,13 @@ import { UserBaseModel } from './base';
 })
 export default class Employee extends UserBaseModel {
   @Column({ nullable: false, default: 0 })
-  wage: number;
+  salary: number;
 
   @Column({ default: 0 })
   score: number;
 
-  @ManyToOne(() => Loan, (loan: Loan) => loan.employees)
-  loan: Loan;
+  @ManyToMany(() => EmployeeLoan, (loan: EmployeeLoan) => loan.employee)
+  loans: EmployeeLoan[];
 
   @ManyToOne(() => Company, (companye: Company) => companye.employees)
   company: Company;

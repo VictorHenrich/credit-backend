@@ -57,7 +57,9 @@ export default class EmployeeService {
     }
   }
 
-  async findManyEmployee(): Promise<Employee[]> {
-    return await this.employeeRepository.find();
+  async findManyEmployee({
+    company,
+  }: Pick<EmployeeBodyProps, 'company'>): Promise<Employee[]> {
+    return await this.employeeRepository.find({ where: { company } });
   }
 }

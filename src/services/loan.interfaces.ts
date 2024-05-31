@@ -3,7 +3,7 @@ import { CompanyModelProps, UUIDModelProps } from './common';
 export interface LoanBodyProps extends CompanyModelProps {
   description: string;
   minScore: number;
-  minWage: number;
+  minSalary: number;
   maxInstallments: number;
 }
 

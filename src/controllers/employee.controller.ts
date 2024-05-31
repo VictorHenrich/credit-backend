@@ -1,5 +1,6 @@
 import {
   Controller,
+  Req,
   Res,
   Get,
   Post,
@@ -8,28 +9,43 @@ import {
   Param,
   Body,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import EmployeeService from 'src/services/employee.service';
 import { EmployeeBodyProps } from 'src/services/employee.interfaces';
 import Employee from 'src/models/employee.entity';
 import ResponseUtils from 'src/utils/responses';
 import { EmployeeNotFoundError } from 'src/utils/exceptions';
+import RequestUtils from 'src/utils/request';
+import Company from 'src/models/company.entity';
 
 @Controller('employee')
 export default class EmployeeController {
   constructor(private employeerService: EmployeeService) {}
 
   @Get()
-  async findMany(@Res() response: Response): Promise<void> {
-    const data: Employee[] = await this.employeerService.findManyEmployee();
+  async findMany(@Req() request, @Res() response: Response): Promise<void> {
+    const company: Company = RequestUtils.getCompanyInTokenData(request);
+
+    const data: Employee[] = await this.employeerService.findManyEmployee({
+      company,
+    });
 
     return ResponseUtils.handleSuccessCase<Employee[]>(response, data);
   }
 
   @Get(':uuid')
-  async findOne(@Res() response: Response, @Param('uuid') uuid: string) {
+  async findOne(
+    @Req() request,
+    @Res() response: Response,
+    @Param('uuid') uuid: string,
+  ) {
     try {
-      const data: Employee = await this.employeerService.findEmployee({ uuid });
+      const company: Company = RequestUtils.getCompanyInTokenData(request);
+
+      const data: Employee = await this.employeerService.findEmployee({
+        uuid,
+        company,
+      });
 
       return ResponseUtils.handleSuccessCase<Employee>(response, data);
     } catch (error) {
@@ -43,10 +59,14 @@ export default class EmployeeController {
 
   @Post()
   async create(
+    @Req() request: Request,
     @Res() response: Response,
-    @Body() body: EmployeeBodyProps,
+    @Body() body: Omit<EmployeeBodyProps, 'company'>,
   ): Promise<void> {
+    const company: Company = RequestUtils.getCompanyInTokenData(request);
+
     const data: Employee = await this.employeerService.createEmployee({
+      company,
       ...body,
     });
 
@@ -55,12 +75,16 @@ export default class EmployeeController {
 
   @Put(':uuid')
   async update(
+    @Req() request: Request,
     @Res() response: Response,
-    @Body() body: EmployeeBodyProps,
+    @Body() body: Omit<EmployeeBodyProps, 'company'>,
     uuid: string,
   ): Promise<void> {
     try {
+      const company: Company = RequestUtils.getCompanyInTokenData(request);
+
       const data: Employee = await this.employeerService.updateEmployee({
+        company,
         uuid,
         ...body,
       });
@@ -76,9 +100,16 @@ export default class EmployeeController {
   }
 
   @Delete(':uuid')
-  async delete(@Res() response: Response, @Param('uuid') uuid: string) {
+  async delete(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('uuid') uuid: string,
+  ) {
     try {
+      const company: Company = RequestUtils.getCompanyInTokenData(request);
+
       const data: Employee = await this.employeerService.deleteEmployee({
+        company,
         uuid,
       });
 

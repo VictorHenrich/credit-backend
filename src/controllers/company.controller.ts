@@ -2,7 +2,7 @@ import { Controller, Res, Get, Post, Put, Param, Body } from '@nestjs/common';
 import { Response } from 'express';
 import Company from 'src/models/company.entity';
 import CompanyService from 'src/services/company.service';
-import { CompanyBodyProps } from 'src/services/company.interface';
+import { CompanyBodyProps } from 'src/services/company.interfaces';
 import ResponseUtils from 'src/utils/responses';
 import { CompanyNotFoundError } from 'src/utils/exceptions';
 

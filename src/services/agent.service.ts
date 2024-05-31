@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Agent from 'src/models/agent.entity';
-import { AgentBodyProps, AgentEntityProps } from './agent.interface';
+import { AgentBodyProps, AgentEntityProps } from './agent.interfaces';
 import CryptUtils from 'src/utils/crypt';
 import { AgentNotFoundError } from 'src/utils/exceptions';
 

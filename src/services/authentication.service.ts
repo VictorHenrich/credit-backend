@@ -4,10 +4,15 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import Employee from 'src/models/employee.entity';
 import CryptUtils from 'src/utils/crypt';
-import { UserAuthProps, TokenDataProps } from './authentication.interfaces';
-import { UserNotFoundError } from 'src/utils/exceptions';
+import {
+  UserAuthProps,
+  TokenDataProps,
+  ValidatedTokenDataProps,
+} from './authentication.interfaces';
+import { InvalidTokenError, UserNotFoundError } from 'src/utils/exceptions';
 import Agent from 'src/models/agent.entity';
 import Company from 'src/models/company.entity';
+import CompanyService from './company.service';
 
 @Injectable()
 export default class AuthenticationService {
@@ -16,6 +21,8 @@ export default class AuthenticationService {
     private readonly employeeRepository: Repository<Employee>,
 
     private readonly agentRepository: Repository<Agent>,
+
+    private readonly companyService: CompanyService,
 
     private readonly jwtService: JwtService,
   ) {}
@@ -38,7 +45,7 @@ export default class AuthenticationService {
 
   private async handleAuthenticationUser(
     company: Company,
-    userUuid: string,
+    userUUID: string,
     email: string,
     password: string,
   ): Promise<string> {
@@ -47,8 +54,8 @@ export default class AuthenticationService {
     await CryptUtils.compareHash(password, passwordCrypted);
 
     const tokenData: TokenDataProps = {
-      companyUuid: company.uuid,
-      userUuid,
+      companyUUID: company.uuid,
+      userUUID,
       email,
     };
 
@@ -85,5 +92,21 @@ export default class AuthenticationService {
     );
   }
 
-  //async validateToken(token: string): Promise<any> {}
+  async validateToken(token: string): Promise<ValidatedTokenDataProps> {
+    const tokenHandled: string = token.replace(/Bearer\s*/i, '').trim();
+
+    try {
+      const { companyUUID: uuid, ...tokenData }: TokenDataProps =
+        await this.jwtService.verifyAsync(tokenHandled);
+
+      const company: Company = await this.companyService.findCompany({ uuid });
+
+      return {
+        ...tokenData,
+        company,
+      };
+    } catch (error) {
+      throw new InvalidTokenError(token);
+    }
+  }
 }

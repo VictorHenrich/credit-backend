@@ -1,6 +1,7 @@
 import {
   Controller,
   Res,
+  Req,
   Get,
   Post,
   Put,
@@ -8,12 +9,14 @@ import {
   Param,
   Body,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import ResponseUtils from 'src/utils/responses';
 import { AgentNotFoundError } from 'src/utils/exceptions';
 import AgentService from 'src/services/agent.service';
-import { AgentBodyProps } from 'src/services/agent.interface';
+import { AgentBodyProps } from 'src/services/agent.interfaces';
 import Agent from 'src/models/agent.entity';
+import Company from 'src/models/company.entity';
+import RequestUtils from 'src/utils/request';
 
 @Controller('agent')
 export default class AgentController {
@@ -27,9 +30,15 @@ export default class AgentController {
   }
 
   @Get(':uuid')
-  async findOne(@Res() response: Response, @Param('uuid') uuid: string) {
+  async findOne(
+    @Req() request,
+    @Res() response: Response,
+    @Param('uuid') uuid: string,
+  ) {
     try {
-      const data: Agent = await this.agentService.findAgent({ uuid });
+      const company: Company = RequestUtils.getCompanyInTokenData(request);
+
+      const data: Agent = await this.agentService.findAgent({ uuid, company });
 
       return ResponseUtils.handleSuccessCase<Agent>(response, data);
     } catch (error) {
@@ -39,11 +48,15 @@ export default class AgentController {
 
   @Post()
   async create(
+    @Req() request,
     @Res() response: Response,
-    @Body() body: AgentBodyProps,
+    @Body() body: Omit<AgentBodyProps, 'company'>,
   ): Promise<void> {
+    const company: Company = RequestUtils.getCompanyInTokenData(request);
+
     const data: Agent = await this.agentService.createAgent({
       ...body,
+      company,
     });
 
     return ResponseUtils.handleSuccessCase<Agent>(response, data);
@@ -51,13 +64,17 @@ export default class AgentController {
 
   @Put(':uuid')
   async update(
+    @Req() request: Request,
     @Res() response: Response,
     @Body() body: AgentBodyProps,
     uuid: string,
   ): Promise<void> {
     try {
+      const company: Company = RequestUtils.getCompanyInTokenData(request);
+
       const data: Agent = await this.agentService.updateAgent({
         uuid,
+        company,
         ...body,
       });
 
@@ -68,10 +85,17 @@ export default class AgentController {
   }
 
   @Delete(':uuid')
-  async delete(@Res() response: Response, @Param('uuid') uuid: string) {
+  async delete(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('uuid') uuid: string,
+  ) {
     try {
+      const company: Company = RequestUtils.getCompanyInTokenData(request);
+
       const data: Agent = await this.agentService.deleteAgent({
         uuid,
+        company,
       });
 
       return ResponseUtils.handleSuccessCase<Agent>(response, data);
