@@ -48,7 +48,7 @@ export class JSONUnauthorizedResponse implements JSONResponseProps<string> {
   }
 }
 
-export class ResponseUtils {
+export default class ResponseUtils {
   static handleSuccessCase<T>(response: Response, data: T = null): void {
     const successResponse: JSONResponseProps<T> = new JSONSuccessResponse({
       data,

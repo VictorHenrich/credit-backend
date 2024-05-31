@@ -36,7 +36,7 @@ export default class AuthenticationService {
   async authenticateEmployee({
     username,
     password,
-  }: EmployeeAuthProps): Promise<Employee> {
+  }: Omit<EmployeeAuthProps, 'uuid'>): Promise<Employee> {
     let employee: Employee;
 
     try {
@@ -51,4 +51,6 @@ export default class AuthenticationService {
 
     return employee;
   }
+
+  async validateToken(token: string): Promise<any> {}
 }

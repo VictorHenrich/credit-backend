@@ -3,7 +3,7 @@ import { Response } from 'express';
 import Company from 'src/models/company.entity';
 import CompanyService from 'src/services/company.service';
 import { CompanyBodyProps } from 'src/services/company.interface';
-import { ResponseUtils } from 'src/utils/responses';
+import ResponseUtils from 'src/utils/responses';
 import { CompanyNotFoundError } from 'src/utils/exceptions';
 
 @Controller('company')

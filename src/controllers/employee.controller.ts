@@ -15,7 +15,7 @@ import {
   EmployeeEntityProps,
 } from 'src/services/employee.interface';
 import Employee from 'src/models/employee.entity';
-import { ResponseUtils } from 'src/utils/responses';
+import ResponseUtils from 'src/utils/responses';
 import { EmployeeNotFoundError } from 'src/utils/exceptions';
 
 @Controller('employee')
