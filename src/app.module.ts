@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
 
 import CompaniesModule from './modules/company.module';
 import EmployeesModule from './modules/employee.module';
@@ -10,6 +11,10 @@ import AgentsModule from './modules/agent.module';
 
 @Module({
   imports: [
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
