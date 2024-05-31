@@ -1,7 +1,6 @@
-import { Controller, Res, Post, Put, Param, Body } from '@nestjs/common';
+import { Controller, Res, Post, Body } from '@nestjs/common';
 import { Response } from 'express';
-import Employee from 'src/models/employee.entity';
-import { EmployeeAuthProps } from 'src/services/authentication.interfaces';
+import { UserAuthProps } from 'src/services/authentication.interfaces';
 import AuthenticationService from 'src/services/authentication.service';
 import { InvalidPasswordError, UserNotFoundError } from 'src/utils/exceptions';
 import ResponseUtils from 'src/utils/responses';
@@ -13,12 +12,13 @@ export default class AuthenticationController {
   @Post('employee')
   async performEmployeeLogin(
     @Res() response: Response,
-    @Body() body: Omit<EmployeeAuthProps, 'uuid'>,
+    @Body() body: Omit<UserAuthProps, 'uuid'>,
   ): Promise<void> {
     try {
-      const data: Employee = await this.authenticationService.authenticateEmployee(body);
+      const data: string =
+        await this.authenticationService.authenticateEmployee(body);
 
-      return ResponseUtils.handleSuccessCase<Employee>(response, data);
+      return ResponseUtils.handleSuccessCase<string>(response, data);
     } catch (error) {
       return ResponseUtils.handleErrorCase(
         response,
@@ -29,19 +29,16 @@ export default class AuthenticationController {
     }
   }
 
-  @Put('employee/:uuid')
-  async changeEmployeeCredentials(
+  @Post('agent')
+  async performAgentLogin(
     @Res() response: Response,
-    @Body() body: Omit<EmployeeAuthProps, 'uuid'>,
-    @Param('uuid') uuid: string,
+    @Body() body: Omit<UserAuthProps, 'uuid'>,
   ): Promise<void> {
     try {
-      await this.authenticationService.changeEmployeeCredentials({
-        uuid,
-        ...body,
-      });
+      const data: string =
+        await this.authenticationService.authenticateAgent(body);
 
-      return ResponseUtils.handleSuccessCase<null>(response);
+      return ResponseUtils.handleSuccessCase<string>(response, data);
     } catch (error) {
       return ResponseUtils.handleErrorCase(
         response,

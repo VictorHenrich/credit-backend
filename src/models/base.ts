@@ -7,3 +7,17 @@ export default abstract class BaseModel extends BaseEntity {
   @Column({ type: 'uuid', default: () => 'uuid_generate_v4()' })
   uuid: string;
 }
+
+export abstract class UserBaseModel extends BaseModel {
+  @Column({ nullable: false })
+  name: string;
+
+  @Column({ nullable: false, unique: true })
+  email: string;
+
+  @Column({ nullable: false, unique: true })
+  documentCPF: string;
+
+  @Column({ nullable: false })
+  password: string;
+}

@@ -6,6 +6,7 @@ import CompaniesModule from './modules/company.module';
 import EmployeesModule from './modules/employee.module';
 import LoansModule from './modules/loan.module';
 import AuthenticationModule from './modules/authentication.module';
+import AgentsModule from './modules/agent.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import AuthenticationModule from './modules/authentication.module';
     CompaniesModule,
     EmployeesModule,
     LoansModule,
+    AgentsModule,
     AuthenticationModule,
   ],
 })

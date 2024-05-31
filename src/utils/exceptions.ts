@@ -1,18 +1,30 @@
-export class CompanyNotFoundError extends Error {
-  constructor(companyUuid: string) {
-    super(`Company '${companyUuid}' was not found`);
+export abstract class ModelNotFoundError extends Error {
+  constructor(value: string, modelName: string) {
+    super(`${modelName} '${value}' was not found`);
   }
 }
 
-export class EmployeeNotFoundError extends Error {
-  constructor(employeeUuid: string) {
-    super(`Employee '${employeeUuid}' was not found`);
+export class CompanyNotFoundError extends ModelNotFoundError {
+  constructor(uuid: string) {
+    super(uuid, 'Company');
   }
 }
 
-export class UserNotFoundError extends Error {
-  constructor(username: string) {
-    super(`Username not '${username}' was not found`);
+export class EmployeeNotFoundError extends ModelNotFoundError {
+  constructor(uuid: string) {
+    super(uuid, 'Employee');
+  }
+}
+
+export class AgentNotFoundError extends ModelNotFoundError {
+  constructor(uuid: string) {
+    super(uuid, 'Agent');
+  }
+}
+
+export class UserNotFoundError extends ModelNotFoundError {
+  constructor(email: string) {
+    super(email, 'User');
   }
 }
 

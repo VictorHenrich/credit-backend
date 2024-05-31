@@ -1,6 +1,10 @@
-import { EmployeeEntityProps } from './employee.interface';
+export interface UserAuthProps {
+  email: string;
+  password: string;
+}
 
-export type EmployeeAuthProps = Pick<
-  EmployeeEntityProps,
-  'uuid' | 'username' | 'password'
->;
+export interface TokenDataProps {
+  companyUuid: string;
+  userUuid: string;
+  email: string;
+}

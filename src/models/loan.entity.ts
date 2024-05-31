@@ -12,6 +12,9 @@ export default class Loan extends BaseModel {
   @Column({ nullable: false, default: 0 })
   minimumScore: number;
 
+  @Column({ nullable: false, default: 0 })
+  minimumWage: number;
+
   @OneToMany(() => Employee, (employee: Employee) => employee.loan)
   employees: Employee[];
 }

@@ -23,7 +23,7 @@ export default class EmployeeService {
   async updateEmployee({
     uuid,
     ...props
-  }: Omit<EmployeeEntityProps, 'username' | 'password'>): Promise<Employee> {
+  }: Omit<EmployeeEntityProps, 'email' | 'password'>): Promise<Employee> {
     const employee: Employee = await this.findEmployee({ uuid });
 
     Object.assign(employee, props);

@@ -1,14 +1,12 @@
 import { ModelUUIDProps } from './common';
 
-export interface EmployeeBodyProps {
+export interface AgentBodyProps {
   name: string;
   email: string;
-  wage: number;
-  score: number;
   password: string;
   documentCPF: string;
 }
 
-export interface EmployeeEntityProps
-  extends Partial<EmployeeBodyProps>,
+export interface AgentEntityProps
+  extends Partial<AgentBodyProps>,
     ModelUUIDProps {}

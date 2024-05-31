@@ -1,29 +1,17 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 import Loan from './loan.entity';
 import Company from './company.entity';
-import BaseModel from './base';
+import { UserBaseModel } from './base';
 
 @Entity({
   name: 'employee',
 })
-export default class Employee extends BaseModel {
-  @Column({ nullable: false })
-  name: string;
-
-  @Column({ nullable: false })
-  email: string;
-
+export default class Employee extends UserBaseModel {
   @Column({ nullable: false, default: 0 })
   wage: number;
 
   @Column({ default: 0 })
   score: number;
-
-  @Column({ nullable: false })
-  username: string;
-
-  @Column({ nullable: false })
-  password: string;
 
   @ManyToOne(() => Loan, (loan: Loan) => loan.employees)
   loan: Loan;
