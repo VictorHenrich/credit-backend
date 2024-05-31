@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Agent from 'src/models/agent.entity';
 import { AgentBodyProps, AgentEntityProps } from './agent.interface';
-import { ModelUUIDProps } from './common';
 import CryptUtils from 'src/utils/crypt';
 import { AgentNotFoundError } from 'src/utils/exceptions';
+
+type AgentFindingType = Pick<AgentEntityProps, 'uuid' | 'company'>;
 
 @Injectable()
 export default class AgentService {
@@ -22,28 +23,29 @@ export default class AgentService {
 
   async updateAgent({
     uuid,
+    company,
     ...props
   }: Omit<AgentEntityProps, 'email' | 'password'>): Promise<Agent> {
-    const agent: Agent = await this.findAgent({ uuid });
+    const agent: Agent = await this.findAgent({ uuid, company });
 
-    Object.assign(agent, props);
+    Object.assign(agent, { ...props, company: undefined });
 
     await this.agentRepository.save(agent);
 
     return agent;
   }
 
-  async deleteAgent({ uuid }: ModelUUIDProps): Promise<Agent> {
-    const agent: Agent = await this.findAgent({ uuid });
+  async deleteAgent({ uuid, company }: AgentFindingType): Promise<Agent> {
+    const agent: Agent = await this.findAgent({ uuid, company });
 
     await this.agentRepository.remove(agent);
 
     return agent;
   }
 
-  async findAgent({ uuid }: ModelUUIDProps): Promise<Agent> {
+  async findAgent({ uuid, company }: AgentFindingType): Promise<Agent> {
     try {
-      return await this.agentRepository.findOneByOrFail({ uuid });
+      return await this.agentRepository.findOneByOrFail({ uuid, company });
     } catch (error) {
       throw new AgentNotFoundError(uuid);
     }

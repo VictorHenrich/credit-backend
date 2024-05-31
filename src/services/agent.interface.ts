@@ -1,12 +1,10 @@
-import { ModelUUIDProps } from './common';
+import { CompanyModelProps, UUIDModelProps } from './common';
 
-export interface AgentBodyProps {
+export interface AgentBodyProps extends CompanyModelProps {
   name: string;
   email: string;
   password: string;
   documentCPF: string;
 }
 
-export interface AgentEntityProps
-  extends Partial<AgentBodyProps>,
-    ModelUUIDProps {}
+export interface AgentEntityProps extends AgentBodyProps, UUIDModelProps {}

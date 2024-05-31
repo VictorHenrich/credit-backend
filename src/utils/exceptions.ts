@@ -22,6 +22,12 @@ export class AgentNotFoundError extends ModelNotFoundError {
   }
 }
 
+export class LoanNotFoundError extends ModelNotFoundError {
+  constructor(uuid: string) {
+    super(uuid, 'Loan');
+  }
+}
+
 export class UserNotFoundError extends ModelNotFoundError {
   constructor(email: string) {
     super(email, 'User');

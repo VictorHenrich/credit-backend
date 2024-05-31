@@ -1,6 +1,6 @@
-import { ModelUUIDProps } from './common';
+import { CompanyModelProps, UUIDModelProps } from './common';
 
-export interface EmployeeBodyProps {
+export interface EmployeeBodyProps extends CompanyModelProps {
   name: string;
   email: string;
   wage: number;
@@ -11,4 +11,4 @@ export interface EmployeeBodyProps {
 
 export interface EmployeeEntityProps
   extends Partial<EmployeeBodyProps>,
-    ModelUUIDProps {}
+    UUIDModelProps {}

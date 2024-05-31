@@ -13,7 +13,7 @@ import AgentsModule from './modules/agent.module';
   imports: [
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET
+      secret: process.env.JWT_SECRET,
     }),
     ConfigModule.forRoot({
       isGlobal: true,

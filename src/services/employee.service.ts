@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Employee from 'src/models/employee.entity';
 import { EmployeeBodyProps, EmployeeEntityProps } from './employee.interfaces';
-import { ModelUUIDProps } from './common';
 import CryptUtils from 'src/utils/crypt';
 import { EmployeeNotFoundError } from 'src/utils/exceptions';
+
+type EmployeeFindingType = Pick<EmployeeEntityProps, 'uuid' | 'company'>;
 
 @Injectable()
 export default class EmployeeService {
@@ -22,28 +23,35 @@ export default class EmployeeService {
 
   async updateEmployee({
     uuid,
+    company,
     ...props
   }: Omit<EmployeeEntityProps, 'email' | 'password'>): Promise<Employee> {
-    const employee: Employee = await this.findEmployee({ uuid });
+    const employee: Employee = await this.findEmployee({ uuid, company });
 
-    Object.assign(employee, props);
+    Object.assign(employee, { ...props, company: undefined });
 
     await this.employeeRepository.save(employee);
 
     return employee;
   }
 
-  async deleteEmployee({ uuid }: ModelUUIDProps): Promise<Employee> {
-    const employee: Employee = await this.findEmployee({ uuid });
+  async deleteEmployee({
+    uuid,
+    company,
+  }: EmployeeFindingType): Promise<Employee> {
+    const employee: Employee = await this.findEmployee({ uuid, company });
 
     await this.employeeRepository.remove(employee);
 
     return employee;
   }
 
-  async findEmployee({ uuid }: ModelUUIDProps): Promise<Employee> {
+  async findEmployee({
+    uuid,
+    company,
+  }: EmployeeFindingType): Promise<Employee> {
     try {
-      return await this.employeeRepository.findOneByOrFail({ uuid });
+      return await this.employeeRepository.findOneByOrFail({ uuid, company });
     } catch (error) {
       throw new EmployeeNotFoundError(uuid);
     }

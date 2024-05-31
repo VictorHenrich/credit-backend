@@ -85,5 +85,5 @@ export default class AuthenticationService {
     );
   }
 
-  async validateToken(token: string): Promise<any> {}
+  //async validateToken(token: string): Promise<any> {}
 }
