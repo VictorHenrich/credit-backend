@@ -1,6 +1,7 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToOne } from 'typeorm';
 import Employee from './employee.entity';
 import BaseModel from './base';
+import Company from './company.entity';
 
 @Entity({
   name: 'loan',
@@ -10,11 +11,17 @@ export default class Loan extends BaseModel {
   description: string;
 
   @Column({ nullable: false, default: 0 })
-  minimumScore: number;
+  minScore: number;
 
   @Column({ nullable: false, default: 0 })
-  minimumWage: number;
+  minWage: number;
+
+  @Column({ nullable: false })
+  maxInstallments: number;
 
   @OneToMany(() => Employee, (employee: Employee) => employee.loan)
   employees: Employee[];
+
+  @ManyToOne(() => Company, (companye: Company) => companye.loans)
+  company: Company;
 }

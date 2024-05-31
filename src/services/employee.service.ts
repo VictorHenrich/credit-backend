@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Employee from 'src/models/employee.entity';
-import { EmployeeBodyProps, EmployeeEntityProps } from './employee.interface';
+import { EmployeeBodyProps, EmployeeEntityProps } from './employee.interfaces';
 import { ModelUUIDProps } from './common';
 import CryptUtils from 'src/utils/crypt';
 import { EmployeeNotFoundError } from 'src/utils/exceptions';

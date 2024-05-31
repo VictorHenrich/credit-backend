@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import EmployeeService from 'src/services/employee.service';
-import { EmployeeBodyProps } from 'src/services/employee.interface';
+import { EmployeeBodyProps } from 'src/services/employee.interfaces';
 import Employee from 'src/models/employee.entity';
 import ResponseUtils from 'src/utils/responses';
 import { EmployeeNotFoundError } from 'src/utils/exceptions';

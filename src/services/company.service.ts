@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Company from 'src/models/company.entity';
-import { CompanyBodyProps, CompanyEntityProps } from './company.interface';
+import { CompanyBodyProps, CompanyEntityProps } from './company.interfaces';
 import { ModelUUIDProps } from './common';
 import { CompanyNotFoundError } from 'src/utils/exceptions';
 
