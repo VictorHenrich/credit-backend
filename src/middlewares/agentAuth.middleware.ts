@@ -1,13 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { NestMiddleware } from '@nestjs/common';
 import AuthenticationService from 'src/services/authentication.service';
-import { ValidatedTokenDataProps } from 'src/services/authentication.interfaces';
 import {
   JSONUnauthorizedResponse,
   JSONResponseProps,
 } from 'src/utils/responses';
+import RequestUtils from 'src/utils/request';
+import { ValidatedTokenDataProps } from 'src/services/authentication.interfaces';
+import Agent from 'src/models/agent.entity';
 
-export default class AuthenticationMiddleware implements NestMiddleware {
+export default class AgentAuthMiddleware implements NestMiddleware {
   constructor(private authenticationService: AuthenticationService) {}
 
   async use(
@@ -18,10 +20,10 @@ export default class AuthenticationMiddleware implements NestMiddleware {
     try {
       const token: string = request.headers.authorization;
 
-      const data: ValidatedTokenDataProps =
-        await this.authenticationService.validateToken(token);
+      const data: ValidatedTokenDataProps<Agent> =
+        await this.authenticationService.captureAgentData(token);
 
-      request['tokenData'] = data;
+      request[RequestUtils.namePropDataToken] = data;
 
       next();
     } catch (error) {

@@ -13,6 +13,10 @@ import { InvalidTokenError, UserNotFoundError } from 'src/utils/exceptions';
 import Agent from 'src/models/agent.entity';
 import Company from 'src/models/company.entity';
 import CompanyService from './company.service';
+import EmployeeService from './employee.service';
+import AgentService from './agent.service';
+
+type TokenProps = [Omit<TokenDataProps, 'companyUUID'>, Company];
 
 @Injectable()
 export default class AuthenticationService {
@@ -23,6 +27,10 @@ export default class AuthenticationService {
     private readonly agentRepository: Repository<Agent>,
 
     private readonly companyService: CompanyService,
+
+    private readonly employeeService: EmployeeService,
+
+    private readonly agentService: AgentService,
 
     private readonly jwtService: JwtService,
   ) {}
@@ -92,7 +100,7 @@ export default class AuthenticationService {
     );
   }
 
-  async validateToken(token: string): Promise<ValidatedTokenDataProps> {
+  async validateToken(token: string): Promise<TokenProps> {
     const tokenHandled: string = token.replace(/Bearer\s*/i, '').trim();
 
     try {
@@ -101,12 +109,34 @@ export default class AuthenticationService {
 
       const company: Company = await this.companyService.findCompany({ uuid });
 
-      return {
-        ...tokenData,
-        company,
-      };
+      return [tokenData, company];
     } catch (error) {
       throw new InvalidTokenError(token);
     }
+  }
+
+  async captureAgentData(
+    token: string,
+  ): Promise<ValidatedTokenDataProps<Agent>> {
+    const [{ userUUID: uuid, email }, company]: TokenProps =
+      await this.validateToken(token);
+
+    const user: Agent = await this.agentService.findAgent({ company, uuid });
+
+    return { email, user, company };
+  }
+
+  async captureEmployeeData(
+    token: string,
+  ): Promise<ValidatedTokenDataProps<Employee>> {
+    const [{ userUUID: uuid, email }, company]: TokenProps =
+      await this.validateToken(token);
+
+    const user: Employee = await this.employeeService.findEmployee({
+      company,
+      uuid,
+    });
+
+    return { email, user, company };
   }
 }

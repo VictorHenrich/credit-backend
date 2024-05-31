@@ -73,15 +73,16 @@ export default class EmployeeController {
     return ResponseUtils.handleSuccessCase<Employee>(response, data);
   }
 
-  @Put(':uuid')
+  @Put()
   async update(
     @Req() request: Request,
     @Res() response: Response,
     @Body() body: Omit<EmployeeBodyProps, 'company'>,
-    uuid: string,
   ): Promise<void> {
     try {
       const company: Company = RequestUtils.getCompanyInTokenData(request);
+
+      const { uuid }: Employee = RequestUtils.getEmployeeInTokenData(request);
 
       const data: Employee = await this.employeerService.updateEmployee({
         company,
@@ -99,14 +100,12 @@ export default class EmployeeController {
     }
   }
 
-  @Delete(':uuid')
-  async delete(
-    @Req() request: Request,
-    @Res() response: Response,
-    @Param('uuid') uuid: string,
-  ) {
+  @Delete()
+  async delete(@Req() request: Request, @Res() response: Response) {
     try {
       const company: Company = RequestUtils.getCompanyInTokenData(request);
+
+      const { uuid }: Employee = RequestUtils.getEmployeeInTokenData(request);
 
       const data: Employee = await this.employeerService.deleteEmployee({
         company,

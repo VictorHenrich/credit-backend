@@ -1,3 +1,4 @@
+import BaseModel from 'src/models/base';
 import Company from 'src/models/company.entity';
 
 export interface UserAuthProps {
@@ -11,7 +12,8 @@ export interface TokenDataProps {
   email: string;
 }
 
-export interface ValidatedTokenDataProps
-  extends Omit<TokenDataProps, 'companyUUID'> {
+export interface ValidatedTokenDataProps<T extends BaseModel>
+  extends Omit<TokenDataProps, 'companyUUID' | 'userUUID'> {
   company: Company;
+  user: T;
 }
