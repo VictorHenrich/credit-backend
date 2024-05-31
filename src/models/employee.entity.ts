@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 import Loan from './loan.entity';
 import Company from './company.entity';
-import BaseModel from './model.base';
+import BaseModel from './base';
 
 @Entity({
   name: 'employee',

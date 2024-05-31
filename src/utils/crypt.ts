@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import { InvalidPasswordError } from './exceptions';
 
 export default class CryptUtils {
   private static salt: number = 10;
@@ -15,7 +16,9 @@ export default class CryptUtils {
     return await bcrypt.hash(value, CryptUtils.salt);
   }
 
-  static async compareHash(data: string, encrypted: string): Promise<boolean> {
-    return await bcrypt.compare(data, encrypted);
+  static async compareHash(data: string, encrypted: string): Promise<void> {
+    const validation: boolean = await bcrypt.compare(data, encrypted);
+
+    if (!validation) throw new InvalidPasswordError();
   }
 }

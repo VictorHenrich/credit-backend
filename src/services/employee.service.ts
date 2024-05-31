@@ -2,13 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Employee from 'src/models/employee.entity';
-import {
-  IEmployeeBody,
-  IEmployeeEntity,
-  IEmployeeAuth,
-} from './employee.interface';
-import { ModelUUIDProps } from './common.interfaces';
+import { EmployeeBodyProps, EmployeeEntityProps } from './employee.interface';
+import { ModelUUIDProps } from './common';
 import CryptUtils from 'src/utils/crypt';
+import { EmployeeNotFoundError } from 'src/utils/exceptions';
 
 @Injectable()
 export default class EmployeeService {
@@ -17,7 +14,7 @@ export default class EmployeeService {
     private employeeRepository: Repository<Employee>,
   ) {}
 
-  async createEmployee(props: IEmployeeBody): Promise<Employee> {
+  async createEmployee(props: EmployeeBodyProps): Promise<Employee> {
     const password: string = await CryptUtils.createHash(props.password);
 
     return await this.employeeRepository.create({ ...props, password });
@@ -26,41 +23,33 @@ export default class EmployeeService {
   async updateEmployee({
     uuid,
     ...props
-  }: Omit<IEmployeeEntity, 'username' | 'password'>): Promise<void> {
-    await this.employeeRepository.update({ uuid }, props);
+  }: Omit<EmployeeEntityProps, 'username' | 'password'>): Promise<Employee> {
+    const employee: Employee = await this.findEmployee({ uuid });
+
+    Object.assign(employee, props);
+
+    await this.employeeRepository.save(employee);
+
+    return employee;
   }
 
-  async deleteEmployee({ uuid }: ModelUUIDProps): Promise<void> {
-    await this.employeeRepository.delete({ uuid });
+  async deleteEmployee({ uuid }: ModelUUIDProps): Promise<Employee> {
+    const employee: Employee = await this.findEmployee({ uuid });
+
+    await this.employeeRepository.remove(employee);
+
+    return employee;
   }
 
   async findEmployee({ uuid }: ModelUUIDProps): Promise<Employee> {
-    return await this.employeeRepository.findOneByOrFail({ uuid });
+    try {
+      return await this.employeeRepository.findOneByOrFail({ uuid });
+    } catch (error) {
+      throw new EmployeeNotFoundError(uuid);
+    }
   }
 
   async findManyEmployee(): Promise<Employee[]> {
-    return await this.employeeRepository.findBy({});
-  }
-
-  async changeAuth({ uuid, username, password }: IEmployeeAuth): Promise<void> {
-    const passwordCrypted: string = await CryptUtils.createHash(password);
-
-    await this.employeeRepository.update(
-      { uuid },
-      { username, password: passwordCrypted },
-    );
-  }
-
-  async checkAuth({
-    uuid,
-    username,
-    password,
-  }: IEmployeeAuth): Promise<boolean> {
-    const employee: Employee = await this.employeeRepository.findOneByOrFail({
-      uuid,
-      username,
-    });
-
-    return await CryptUtils.compareHash(password, employee.password);
+    return await this.employeeRepository.find();
   }
 }

@@ -3,11 +3,7 @@ import { Response } from 'express';
 import Company from 'src/models/company.entity';
 import CompanyService from 'src/services/company.service';
 import { CompanyBodyProps } from 'src/services/company.interface';
-import {
-  JSONSuccessResponse,
-  JSONErrorResponse,
-  JSONResponseProps,
-} from 'src/utils/responses';
+import { ResponseUtils } from 'src/utils/responses';
 import { CompanyNotFoundError } from 'src/utils/exceptions';
 
 @Controller('company')
@@ -22,47 +18,21 @@ export default class CompanyController {
     try {
       const data: Company = await this.companyService.findCompany({ uuid });
 
-      const successResponse: JSONResponseProps<Company> =
-        new JSONSuccessResponse({ data });
-
-      response.status(successResponse.statusCode).json(successResponse);
+      return ResponseUtils.handleSuccessCase<Company>(response, data);
     } catch (error) {
-      if (error instanceof CompanyNotFoundError) {
-        const errorResponse: JSONResponseProps<string> = new JSONErrorResponse({
-          data: error.message,
-        });
-
-        response.status(errorResponse.statusCode).json(errorResponse);
-
-        return;
-      }
-
-      throw new error();
+      return ResponseUtils.handleErrorCase(
+        response,
+        error,
+        CompanyNotFoundError,
+      );
     }
   }
 
   @Get()
   async findMany(@Res() response: Response): Promise<void> {
-    try {
-      const data: Company[] = await this.companyService.findManyCompany();
+    const data: Company[] = await this.companyService.findManyCompany();
 
-      const successResponse: JSONResponseProps<Company[]> =
-        new JSONSuccessResponse({ data });
-
-      response.status(successResponse.statusCode).json(successResponse);
-    } catch (error) {
-      if (error instanceof CompanyNotFoundError) {
-        const errorResponse: JSONResponseProps<string> = new JSONErrorResponse({
-          data: error.message,
-        });
-
-        response.status(errorResponse.statusCode).json(errorResponse);
-
-        return;
-      }
-
-      throw new error();
-    }
+    return ResponseUtils.handleSuccessCase<Company[]>(response, data);
   }
 
   @Post()
@@ -72,10 +42,7 @@ export default class CompanyController {
   ): Promise<void> {
     const data: Company = await this.companyService.createCompany(company);
 
-    const successResponse: JSONResponseProps<Company[]> =
-      new JSONSuccessResponse({ data });
-
-    response.status(successResponse.statusCode).json(successResponse);
+    return ResponseUtils.handleSuccessCase<Company>(response, data);
   }
 
   @Put(':uuid')
@@ -89,9 +56,6 @@ export default class CompanyController {
       ...company,
     });
 
-    const successResponse: JSONResponseProps<Company[]> =
-      new JSONSuccessResponse({ data });
-
-    response.status(successResponse.statusCode).json(successResponse);
+    return ResponseUtils.handleSuccessCase<Company>(response, data);
   }
 }

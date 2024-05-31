@@ -1,6 +1,6 @@
-import { ModelUUIDProps } from './common.interfaces';
+import { ModelUUIDProps } from './common';
 
-export interface IEmployeeBody {
+export interface EmployeeBodyProps {
   name: string;
   email: string;
   wage: number;
@@ -9,11 +9,6 @@ export interface IEmployeeBody {
   password: string;
 }
 
-export interface IEmployeeEntity
-  extends Partial<IEmployeeBody>,
+export interface EmployeeEntityProps
+  extends Partial<EmployeeBodyProps>,
     ModelUUIDProps {}
-
-export type IEmployeeAuth = Pick<
-  IEmployeeEntity,
-  'uuid' | 'username' | 'password'
->;

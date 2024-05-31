@@ -1,4 +1,4 @@
-import { ModelUUIDProps } from './common.interfaces';
+import { ModelUUIDProps } from './common';
 
 export interface CompanyBodyProps {
   companyName: string;

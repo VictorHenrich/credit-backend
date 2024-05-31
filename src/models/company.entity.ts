@@ -1,6 +1,6 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import Employee from './employee.entity';
-import BaseModel from './model.base';
+import BaseModel from './base';
 
 @Entity({
   name: 'company',

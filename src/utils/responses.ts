@@ -1,3 +1,5 @@
+import { Response } from 'express';
+
 export enum ResponseTypes {
   SUCCESS = 'success',
   ERROR = 'error',
@@ -43,5 +45,33 @@ export class JSONUnauthorizedResponse implements JSONResponseProps<string> {
     this.statusCode = 200;
     this.info = ResponseTypes.UNAUTHORIZED;
     this.data = 'Request blocked, please check authentication keys';
+  }
+}
+
+export class ResponseUtils {
+  static handleSuccessCase<T>(response: Response, data: T = null): void {
+    const successResponse: JSONResponseProps<T> = new JSONSuccessResponse({
+      data,
+    });
+
+    response.status(successResponse.statusCode).json(successResponse);
+  }
+
+  static handleErrorCase(
+    response: Response,
+    error: Error,
+    ...errorClasses: any[]
+  ): void {
+    for (const errorClass of errorClasses) {
+      if (error instanceof errorClass) {
+        const errorResponse: JSONResponseProps<string> = new JSONErrorResponse({
+          data: error.message,
+        });
+
+        response.status(errorResponse.statusCode).json(errorResponse);
+      }
+    }
+
+    throw error;
   }
 }

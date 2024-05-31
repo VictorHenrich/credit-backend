@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Company from 'src/models/company.entity';
 import { CompanyBodyProps, CompanyEntityProps } from './company.interface';
-import { ModelUUIDProps } from './common.interfaces';
+import { ModelUUIDProps } from './common';
 import { CompanyNotFoundError } from 'src/utils/exceptions';
 
 @Injectable()
