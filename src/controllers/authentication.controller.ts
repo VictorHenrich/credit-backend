@@ -1,5 +1,6 @@
 import { Controller, Res, Post, Put, Param, Body } from '@nestjs/common';
 import { Response } from 'express';
+import Employee from 'src/models/employee.entity';
 import { EmployeeAuthProps } from 'src/services/authentication.interfaces';
 import AuthenticationService from 'src/services/authentication.service';
 import { InvalidPasswordError, UserNotFoundError } from 'src/utils/exceptions';
@@ -15,9 +16,9 @@ export default class AuthenticationController {
     @Body() body: Omit<EmployeeAuthProps, 'uuid'>,
   ): Promise<void> {
     try {
-      const data = await this.authenticationService.authenticateEmployee(body);
+      const data: Employee = await this.authenticationService.authenticateEmployee(body);
 
-      return ResponseUtils.handleSuccessCase(response, data);
+      return ResponseUtils.handleSuccessCase<Employee>(response, data);
     } catch (error) {
       return ResponseUtils.handleErrorCase(
         response,
@@ -35,12 +36,12 @@ export default class AuthenticationController {
     @Param('uuid') uuid: string,
   ): Promise<void> {
     try {
-      const data = await this.authenticationService.changeEmployeeCredentials({
+      await this.authenticationService.changeEmployeeCredentials({
         uuid,
         ...body,
       });
 
-      return ResponseUtils.handleSuccessCase(response, data);
+      return ResponseUtils.handleSuccessCase<null>(response);
     } catch (error) {
       return ResponseUtils.handleErrorCase(
         response,
