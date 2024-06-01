@@ -24,6 +24,7 @@ export default class AuthenticationService {
     @InjectRepository(Employee)
     private readonly employeeRepository: Repository<Employee>,
 
+    @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
 
     private readonly companyService: CompanyService,

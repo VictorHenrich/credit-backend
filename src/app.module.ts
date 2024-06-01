@@ -8,6 +8,7 @@ import EmployeesModule from './modules/employee.module';
 import LoansModule from './modules/loan.module';
 import AuthenticationModule from './modules/authentication.module';
 import AgentsModule from './modules/agent.module';
+import EmployeeLoansModule from './modules/employeeLoan.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import AgentsModule from './modules/agent.module';
     EmployeesModule,
     LoansModule,
     AgentsModule,
+    EmployeeLoansModule,
     AuthenticationModule,
   ],
 })
