@@ -13,10 +13,10 @@ import { Response, Request } from 'express';
 import ResponseUtils from 'src/utils/responses';
 import { AgentNotFoundError } from 'src/utils/exceptions';
 import AgentService from 'src/services/agent.service';
-import { AgentBodyProps } from 'src/services/agent.interfaces';
 import Agent from 'src/models/agent.entity';
 import Company from 'src/models/company.entity';
 import RequestUtils from 'src/utils/request';
+import { AgentBodyParams } from './agent.params';
 
 @Controller('agent')
 export default class AgentController {
@@ -50,7 +50,7 @@ export default class AgentController {
   async create(
     @Req() request,
     @Res() response: Response,
-    @Body() body: Omit<AgentBodyProps, 'company'>,
+    @Body() body: AgentBodyParams,
   ): Promise<void> {
     const company: Company = RequestUtils.getCompanyInTokenData(request);
 
@@ -66,7 +66,7 @@ export default class AgentController {
   async update(
     @Req() request: Request,
     @Res() response: Response,
-    @Body() body: AgentBodyProps,
+    @Body() body: AgentBodyParams,
     uuid: string,
   ): Promise<void> {
     try {

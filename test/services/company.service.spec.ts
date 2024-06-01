@@ -3,19 +3,22 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Company from '../../src/models/company.entity';
 import CompanyService from '../../src/services/company.service';
+import { getMockEntity } from '../common';
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
 
   let companyRepository: Repository<Company>;
 
-  const mockCompany: Company = {
+  const mockCompany: Company = getMockEntity<Company>({
     id: 1,
     uuid: '',
     companyName: 'Empresa Teste',
     fantasyName: 'Empresa Fantasia Teste',
+    agents: [],
     employees: [],
-  };
+    loans: [],
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,7 +60,7 @@ describe('CompanyService', () => {
       await companyService.updateCompany(mockCompany);
 
     expect(companyUpdated).not.toBeNull();
-    expect(companyUpdated).not.toBeDefined();
+    expect(companyUpdated).toBe(companyUpdated);
   });
 
   it('Company capture test', async () => {

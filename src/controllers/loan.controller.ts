@@ -16,7 +16,7 @@ import LoanService from 'src/services/loan.service';
 import RequestUtils from 'src/utils/request';
 import ResponseUtils from 'src/utils/responses';
 import { LoanNotFoundError } from 'src/utils/exceptions';
-import { LoanBodyProps } from 'src/services/loan.interfaces';
+import { LoanBodyParams } from './loan.params';
 
 @Controller('loan')
 export default class LoanController {
@@ -55,7 +55,7 @@ export default class LoanController {
   async create(
     @Req() request: Request,
     @Res() response: Response,
-    @Body() body: LoanBodyProps,
+    @Body() body: LoanBodyParams,
   ): Promise<void> {
     const company: Company = RequestUtils.getCompanyInTokenData(request);
 
@@ -68,7 +68,7 @@ export default class LoanController {
   async update(
     @Req() request: Request,
     @Res() response: Response,
-    @Body() body: LoanBodyProps,
+    @Body() body: LoanBodyParams,
     @Param('uuid') uuid: string,
   ): Promise<void> {
     const company: Company = RequestUtils.getCompanyInTokenData(request);

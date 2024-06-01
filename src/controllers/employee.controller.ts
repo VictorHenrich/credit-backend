@@ -11,12 +11,12 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import EmployeeService from 'src/services/employee.service';
-import { EmployeeBodyProps } from 'src/services/employee.interfaces';
 import Employee from 'src/models/employee.entity';
 import ResponseUtils from 'src/utils/responses';
 import { EmployeeNotFoundError } from 'src/utils/exceptions';
 import RequestUtils from 'src/utils/request';
 import Company from 'src/models/company.entity';
+import { EmployeeBodyParams } from './employee.params';
 
 @Controller('employee')
 export default class EmployeeController {
@@ -61,7 +61,7 @@ export default class EmployeeController {
   async create(
     @Req() request: Request,
     @Res() response: Response,
-    @Body() body: Omit<EmployeeBodyProps, 'company'>,
+    @Body() body: EmployeeBodyParams,
   ): Promise<void> {
     const company: Company = RequestUtils.getCompanyInTokenData(request);
 
@@ -77,7 +77,7 @@ export default class EmployeeController {
   async update(
     @Req() request: Request,
     @Res() response: Response,
-    @Body() body: Omit<EmployeeBodyProps, 'company'>,
+    @Body() body: EmployeeBodyParams,
   ): Promise<void> {
     try {
       const company: Company = RequestUtils.getCompanyInTokenData(request);

@@ -3,7 +3,6 @@ import { Response, Request } from 'express';
 import Company from 'src/models/company.entity';
 import Employee from 'src/models/employee.entity';
 import Loan from 'src/models/loan.entity';
-import { EmployeeLoanBodyProps } from 'src/services/employeeLoan.interfaces';
 import EmployeeLoanService from 'src/services/employeeLoan.service';
 import LoanService from 'src/services/loan.service';
 import {
@@ -13,6 +12,7 @@ import {
 } from 'src/utils/exceptions';
 import RequestUtils from 'src/utils/request';
 import ResponseUtils from 'src/utils/responses';
+import { EmployeeLoanBodyParams } from './employeeLoan.params';
 
 @Controller('employee_loan')
 export default class EmployeeLoanController {
@@ -26,7 +26,7 @@ export default class EmployeeLoanController {
     @Req() request: Request,
     @Res() response: Response,
     @Param('loanUuid') uuid: string,
-    @Body() body: Omit<EmployeeLoanBodyProps, 'employee' | 'loan'>,
+    @Body() body: EmployeeLoanBodyParams,
   ): Promise<void> {
     const company: Company = RequestUtils.getCompanyInTokenData(request);
 
