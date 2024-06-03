@@ -10,10 +10,19 @@ export interface TokenDataProps {
   companyUUID: string;
   userUUID: string;
   email: string;
+  refreshToken: boolean;
 }
 
+export interface TokenDataResultProps {
+  token: string;
+  refreshToken: string;
+}
+
+export interface RefreshTokenDataResultProps
+  extends Omit<TokenDataResultProps, 'refreshToken'> {}
+
 export interface ValidatedTokenDataProps<T extends BaseModel>
-  extends Omit<TokenDataProps, 'companyUUID' | 'userUUID'> {
+  extends Omit<TokenDataProps, 'companyUUID' | 'userUUID' | 'refreshToken'> {
   company: Company;
   user: T;
 }

@@ -1,15 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CompanyBodyProps } from "src/services/company.interfaces";
+import { CompanyBodyProps } from 'src/services/company.interfaces';
 
+export class CompanyBodyParams implements CompanyBodyProps {
+  @ApiProperty()
+  companyName: string;
 
+  @ApiProperty()
+  fantasyName: string;
 
-export class CompanyBodyParams implements CompanyBodyProps{
-    @ApiProperty()
-    companyName: string;
-
-    @ApiProperty()
-    fantasyName: string;
-
-    @ApiProperty()
-    documentCNPJ: string;
+  @ApiProperty()
+  documentCNPJ: string;
 }

@@ -8,6 +8,8 @@ import {
   UserAuthProps,
   TokenDataProps,
   ValidatedTokenDataProps,
+  TokenDataResultProps,
+  RefreshTokenDataResultProps,
 } from './authentication.interfaces';
 import { InvalidTokenError, UserNotFoundError } from 'src/utils/exceptions';
 import Agent from 'src/models/agent.entity';
@@ -15,8 +17,6 @@ import Company from 'src/models/company.entity';
 import CompanyService from './company.service';
 import EmployeeService from './employee.service';
 import AgentService from './agent.service';
-
-type TokenProps = [Omit<TokenDataProps, 'companyUUID'>, Company];
 
 @Injectable()
 export default class AuthenticationService {
@@ -52,31 +52,61 @@ export default class AuthenticationService {
     }
   }
 
+  private async createToken(props: TokenDataProps): Promise<string> {
+    return await this.jwtService.signAsync(props, { expiresIn: '10m' });
+  }
+
+  private async createRefreshToken(props: TokenDataProps): Promise<string> {
+    return await this.jwtService.signAsync(props, { expiresIn: '1d' });
+  }
+
   private async handleAuthenticationUser(
-    company: Company,
+    { uuid: companyUUID }: Company,
     userUUID: string,
     email: string,
     password: string,
-  ): Promise<string> {
+  ): Promise<TokenDataResultProps> {
     const passwordCrypted: string = await CryptUtils.createHash(password);
 
     await CryptUtils.compareHash(password, passwordCrypted);
 
     const tokenData: TokenDataProps = {
-      companyUUID: company.uuid,
+      companyUUID,
       userUUID,
       email,
+      refreshToken: false,
     };
 
-    const token: string = await this.jwtService.signAsync(tokenData);
+    const refreshTokenData: TokenDataProps = {
+      ...tokenData,
+      refreshToken: true,
+    };
 
-    return token;
+    const token: string = await this.createToken(tokenData);
+
+    const refreshToken: string =
+      await this.createRefreshToken(refreshTokenData);
+
+    return { token, refreshToken };
+  }
+
+  private async validateToken(token: string): Promise<TokenDataProps> {
+    const tokenHandled: string = token.replace(/Bearer\s*/i, '').trim();
+
+    try {
+      const tokenData: TokenDataProps =
+        await this.jwtService.verifyAsync(tokenHandled);
+
+      return tokenData;
+    } catch (error) {
+      throw new InvalidTokenError(token);
+    }
   }
 
   async authenticateEmployee({
     email,
     password,
-  }: Omit<UserAuthProps, 'uuid'>): Promise<string> {
+  }: Omit<UserAuthProps, 'uuid'>): Promise<TokenDataResultProps> {
     const employee: Employee = await this.findEmployeeByEmail(email);
 
     return await this.handleAuthenticationUser(
@@ -90,7 +120,7 @@ export default class AuthenticationService {
   async authenticateAgent({
     email,
     password,
-  }: Omit<UserAuthProps, 'uuid'>): Promise<string> {
+  }: Omit<UserAuthProps, 'uuid'>): Promise<TokenDataResultProps> {
     const agent: Agent = await this.findAgentByEmail(email);
 
     return await this.handleAuthenticationUser(
@@ -101,26 +131,31 @@ export default class AuthenticationService {
     );
   }
 
-  async validateToken(token: string): Promise<TokenProps> {
-    const tokenHandled: string = token.replace(/Bearer\s*/i, '').trim();
+  async refreshToken(token: string): Promise<RefreshTokenDataResultProps> {
+    const refreshTokenData: TokenDataProps = await this.validateToken(token);
 
-    try {
-      const { companyUUID: uuid, ...tokenData }: TokenDataProps =
-        await this.jwtService.verifyAsync(tokenHandled);
+    if (!refreshTokenData.refreshToken) throw new InvalidTokenError(token);
 
-      const company: Company = await this.companyService.findCompany({ uuid });
+    const newToken: string = await this.createToken({
+      ...refreshTokenData,
+      refreshToken: false,
+    });
 
-      return [tokenData, company];
-    } catch (error) {
-      throw new InvalidTokenError(token);
-    }
+    return { token: newToken };
   }
 
   async captureAgentData(
     token: string,
   ): Promise<ValidatedTokenDataProps<Agent>> {
-    const [{ userUUID: uuid, email }, company]: TokenProps =
-      await this.validateToken(token);
+    const {
+      userUUID: uuid,
+      companyUUID,
+      email,
+    }: TokenDataProps = await this.validateToken(token);
+
+    const company: Company = await this.companyService.findCompany({
+      uuid: companyUUID,
+    });
 
     const user: Agent = await this.agentService.findAgent({ company, uuid });
 
@@ -130,8 +165,15 @@ export default class AuthenticationService {
   async captureEmployeeData(
     token: string,
   ): Promise<ValidatedTokenDataProps<Employee>> {
-    const [{ userUUID: uuid, email }, company]: TokenProps =
-      await this.validateToken(token);
+    const {
+      userUUID: uuid,
+      companyUUID,
+      email,
+    }: TokenDataProps = await this.validateToken(token);
+
+    const company: Company = await this.companyService.findCompany({
+      uuid: companyUUID,
+    });
 
     const user: Employee = await this.employeeService.findEmployee({
       company,
