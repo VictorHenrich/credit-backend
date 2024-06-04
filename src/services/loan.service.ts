@@ -30,9 +30,11 @@ export default class LoanService {
   }
 
   async createLoan(props: LoanBodyProps): Promise<Loan> {
+    delete props["uuid"];
+    
     const loan: Loan = this.loanRepository.create(props);
 
-    await this.loanRepository.save(loan);
+    await this.loanRepository.insert(loan);
 
     return loan;
   }
@@ -44,7 +46,7 @@ export default class LoanService {
   }: LoanEntityProps): Promise<Loan> {
     const loan: Loan = await this.findLoan({ uuid, company });
 
-    Object.assign(loan, { ...props, company: undefined });
+    Object.assign(loan, { ...props, company: undefined, uuid: undefined });
 
     await this.loanRepository.save(loan);
 

@@ -39,9 +39,10 @@ export default class LoansModule implements NestModule {
       .apply(AgentAuthMiddleware)
       .forRoutes(
         { path: '/loan', method: RequestMethod.GET },
+        { path: '/loan/:uuid', method: RequestMethod.GET },
         { path: '/loan', method: RequestMethod.POST },
-        { path: '/loan', method: RequestMethod.DELETE },
-        { path: '/loan', method: RequestMethod.PUT },
+        { path: '/loan/:uuid', method: RequestMethod.DELETE },
+        { path: '/loan/:uuid', method: RequestMethod.PUT },
       );
   }
 }

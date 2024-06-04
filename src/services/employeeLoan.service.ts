@@ -43,7 +43,7 @@ export default class EmployeeLoanService {
       value,
     });
 
-    await this.employeeLoanRepository.save(employeeLoan);
+    await this.employeeLoanRepository.insert(employeeLoan);
 
     return employeeLoan;
   }
