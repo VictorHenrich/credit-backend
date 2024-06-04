@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import AuthenticationService from 'src/services/authentication.service';
 import {
   JSONUnauthorizedResponse,
@@ -9,6 +9,7 @@ import RequestUtils from 'src/utils/request';
 import { ValidatedTokenDataProps } from 'src/services/authentication.interfaces';
 import Agent from 'src/models/agent.entity';
 
+@Injectable()
 export default class AgentAuthMiddleware implements NestMiddleware {
   constructor(private authenticationService: AuthenticationService) {}
 
@@ -27,6 +28,7 @@ export default class AgentAuthMiddleware implements NestMiddleware {
 
       next();
     } catch (error) {
+      throw error;
       const unauthorizedResponse: JSONResponseProps<string> =
         new JSONUnauthorizedResponse();
 

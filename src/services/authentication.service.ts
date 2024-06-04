@@ -59,15 +59,18 @@ export default class AuthenticationService {
   }
 
   private async createToken(props: TokenDataProps): Promise<string> {
+    delete props['iat'];
+    delete props['exp'];
+
     return await this.jwtService.signAsync(props, {
-      expiresIn: '10m',
+      expiresIn: process.env.TOKEN_EXPIRATION_TIME,
       secret: process.env.SECRET_KEY,
     });
   }
 
   private async createRefreshToken(props: TokenDataProps): Promise<string> {
     return await this.jwtService.signAsync(props, {
-      expiresIn: '1d',
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRATION_TIME,
       secret: process.env.SECRET_KEY,
     });
   }
@@ -105,10 +108,9 @@ export default class AuthenticationService {
     const tokenHandled: string = token.replace(/Bearer\s*/i, '').trim();
 
     try {
-      const tokenData: TokenDataProps =
-        await this.jwtService.verifyAsync(tokenHandled);
-
-      return tokenData;
+      return await this.jwtService.verifyAsync(tokenHandled, {
+        secret: process.env.SECRET_KEY,
+      });
     } catch (error) {
       throw new InvalidTokenError(token);
     }

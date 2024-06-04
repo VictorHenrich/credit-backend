@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { NestMiddleware } from '@nestjs/common';
+import { NestMiddleware, Injectable } from '@nestjs/common';
 import AuthenticationService from 'src/services/authentication.service';
 import {
   JSONUnauthorizedResponse,
@@ -9,6 +9,7 @@ import RequestUtils from 'src/utils/request';
 import { ValidatedTokenDataProps } from 'src/services/authentication.interfaces';
 import Employee from 'src/models/employee.entity';
 
+@Injectable()
 export default class EmployeeAuthMiddleware implements NestMiddleware {
   constructor(private authenticationService: AuthenticationService) {}
 

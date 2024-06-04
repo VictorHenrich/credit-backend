@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import BaseModel from './base';
 import Loan from './loan.entity';
 import Employee from './employee.entity';
@@ -11,8 +11,10 @@ export default class EmployeeLoan extends BaseModel {
   value: number;
 
   @ManyToOne(() => Employee, (employee: Employee) => employee.loans)
+  @JoinColumn()
   employee: Employee;
 
   @ManyToOne(() => Loan, (loan: Loan) => loan.historic)
+  @JoinColumn()
   loan: Loan;
 }

@@ -5,10 +5,10 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Agent } from 'http';
 import AuthenticationController from 'src/controllers/authentication.controller';
 import AgentAuthMiddleware from 'src/middlewares/agentAuth.middleware';
 import EmployeeAuthMiddleware from 'src/middlewares/employeeAuth.middleware';
+import Agent from 'src/models/agent.entity';
 import Company from 'src/models/company.entity';
 import Employee from 'src/models/employee.entity';
 import AgentService from 'src/services/agent.service';
@@ -30,10 +30,10 @@ export default class AuthenticationModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AgentAuthMiddleware)
-      .forRoutes({ path: 'agent', method: RequestMethod.GET });
+      .forRoutes({ path: '/agent', method: RequestMethod.GET });
 
     consumer
       .apply(EmployeeAuthMiddleware)
-      .forRoutes({ path: 'employee', method: RequestMethod.GET });
+      .forRoutes({ path: '/auth/employee', method: RequestMethod.GET });
   }
 }

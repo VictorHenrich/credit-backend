@@ -14,6 +14,7 @@ export default class Employee extends UserBaseModel {
   score: number;
 
   @ManyToMany(() => EmployeeLoan, (loan: EmployeeLoan) => loan.employee)
+  @JoinColumn()
   loans: EmployeeLoan[];
 
   @ManyToOne(() => Company, (companye: Company) => companye.employees)
