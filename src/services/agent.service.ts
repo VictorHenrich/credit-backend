@@ -16,8 +16,8 @@ export default class AgentService {
   ) {}
 
   async createAgent(props: AgentBodyProps): Promise<Agent> {
-    delete props["uuid"];
-    
+    delete props['uuid'];
+
     const password: string = await CryptUtils.createHash(props.password);
 
     const agent: Agent = this.agentRepository.create({ ...props, password });

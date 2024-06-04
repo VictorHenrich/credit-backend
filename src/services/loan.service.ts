@@ -30,8 +30,8 @@ export default class LoanService {
   }
 
   async createLoan(props: LoanBodyProps): Promise<Loan> {
-    delete props["uuid"];
-    
+    delete props['uuid'];
+
     const loan: Loan = this.loanRepository.create(props);
 
     await this.loanRepository.insert(loan);

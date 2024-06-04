@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import EmployeeAuthMiddleware from 'src/middlewares/employeeAuth.middleware';
 import EmployeeLoanController from 'src/controllers/employeeLoan.controller';
@@ -14,6 +19,11 @@ import Loan from 'src/models/loan.entity';
 })
 export default class EmployeeLoansModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(EmployeeAuthMiddleware);
+    consumer
+      .apply(EmployeeAuthMiddleware)
+      .forRoutes(
+        { path: '/employee_loan', method: RequestMethod.GET },
+        { path: '/employee_loan', method: RequestMethod.POST },
+      );
   }
 }

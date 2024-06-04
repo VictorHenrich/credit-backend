@@ -1,10 +1,8 @@
-import { Controller, Res, Req, Post, Param, Body } from '@nestjs/common';
+import { Controller, Res, Req, Post, Param, Body, Get } from '@nestjs/common';
 import { Response, Request } from 'express';
-import Company from 'src/models/company.entity';
 import Employee from 'src/models/employee.entity';
 import Loan from 'src/models/loan.entity';
 import EmployeeLoanService from 'src/services/employeeLoan.service';
-import LoanService from 'src/services/loan.service';
 import {
   LoanNotFoundError,
   MarginExceededError,
@@ -16,26 +14,42 @@ import { EmployeeLoanBodyParams } from './employeeLoan.params';
 
 @Controller('employee_loan')
 export default class EmployeeLoanController {
-  constructor(
-    private readonly employeeLoanService: EmployeeLoanService,
-    private readonly loanService: LoanService,
-  ) {}
+  constructor(private readonly employeeLoanService: EmployeeLoanService) {}
 
-  @Post(':loanUuid')
+  @Get()
+  async findReleasedLoans(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const employee: Employee = RequestUtils.getEmployeeInTokenData(request);
+
+    try {
+      const loans: Loan[] | Loan =
+        await this.employeeLoanService.findReleasedLoans({ employee });
+
+      ResponseUtils.handleSuccessCase<Loan[] | Loan>(response, loans);
+    } catch (error) {
+      ResponseUtils.handleErrorCase(
+        response,
+        error,
+        LoanNotFoundError,
+        MarginExceededError,
+        ScoreNotReachedError,
+      );
+    }
+  }
+
+  @Post()
   async performLoan(
     @Req() request: Request,
     @Res() response: Response,
     @Param('loanUuid') uuid: string,
     @Body() body: EmployeeLoanBodyParams,
   ): Promise<void> {
-    const company: Company = RequestUtils.getCompanyInTokenData(request);
-
     const employee: Employee = RequestUtils.getEmployeeInTokenData(request);
 
     try {
-      const loan: Loan = await this.loanService.findLoan({ uuid, company });
-
-      await this.employeeLoanService.performLoan({ ...body, loan, employee });
+      await this.employeeLoanService.performLoan({ ...body, employee });
 
       ResponseUtils.handleSuccessCase<null>(response);
     } catch (error) {

@@ -16,8 +16,8 @@ export default class EmployeeService {
   ) {}
 
   async createEmployee(props: EmployeeBodyProps): Promise<Employee> {
-    delete props["uuid"];
-    
+    delete props['uuid'];
+
     const password: string = await CryptUtils.createHash(props.password);
 
     const employee: Employee = this.employeeRepository.create({

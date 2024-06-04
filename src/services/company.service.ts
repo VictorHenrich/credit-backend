@@ -14,8 +14,8 @@ export default class CompanyService {
   ) {}
 
   async createCompany(props: CompanyBodyProps): Promise<Company> {
-    delete props["uuid"];
-    
+    delete props['uuid'];
+
     const company: Company = this.companyRepository.create({ ...props });
 
     await this.companyRepository.insert(company);

@@ -64,3 +64,11 @@ export class ScoreNotReachedError extends Error {
     );
   }
 }
+
+export class EmployeeNotReleasedForLoanError extends Error {
+  constructor(employee: Employee) {
+    super(
+      `Employee score or salary ${employee.uuid} did not reach the value allowed for release`,
+    );
+  }
+}
