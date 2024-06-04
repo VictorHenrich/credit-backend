@@ -37,37 +37,48 @@ export default class AuthenticationService {
   ) {}
 
   private async findEmployeeByEmail(email: string): Promise<Employee> {
-    try {
-      return await this.employeeRepository.findOneByOrFail({ email });
-    } catch (error) {
-      throw new UserNotFoundError(email);
-    }
+    const employee: Employee = await this.employeeRepository.findOne({
+      where: { email },
+      relations: ['company'],
+    });
+
+    if (!employee) throw new UserNotFoundError(email);
+
+    return employee;
   }
 
   private async findAgentByEmail(email: string): Promise<Agent> {
-    try {
-      return await this.agentRepository.findOneByOrFail({ email });
-    } catch (error) {
-      throw new UserNotFoundError(email);
-    }
+    const agent: Agent = await this.agentRepository.findOne({
+      where: { email },
+      relations: ['company'],
+    });
+
+    if (!agent) throw new UserNotFoundError(email);
+
+    return agent;
   }
 
   private async createToken(props: TokenDataProps): Promise<string> {
-    return await this.jwtService.signAsync(props, { expiresIn: '10m' });
+    return await this.jwtService.signAsync(props, {
+      expiresIn: '10m',
+      secret: process.env.SECRET_KEY,
+    });
   }
 
   private async createRefreshToken(props: TokenDataProps): Promise<string> {
-    return await this.jwtService.signAsync(props, { expiresIn: '1d' });
+    return await this.jwtService.signAsync(props, {
+      expiresIn: '1d',
+      secret: process.env.SECRET_KEY,
+    });
   }
 
   private async handleAuthenticationUser(
     { uuid: companyUUID }: Company,
     userUUID: string,
+    passwordCrypted: string,
     email: string,
     password: string,
   ): Promise<TokenDataResultProps> {
-    const passwordCrypted: string = await CryptUtils.createHash(password);
-
     await CryptUtils.compareHash(password, passwordCrypted);
 
     const tokenData: TokenDataProps = {
@@ -112,6 +123,7 @@ export default class AuthenticationService {
     return await this.handleAuthenticationUser(
       employee.company,
       employee.uuid,
+      employee.password,
       email,
       password,
     );
@@ -126,6 +138,7 @@ export default class AuthenticationService {
     return await this.handleAuthenticationUser(
       agent.company,
       agent.uuid,
+      agent.password,
       email,
       password,
     );

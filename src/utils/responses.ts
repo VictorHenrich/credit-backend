@@ -30,7 +30,7 @@ export class JSONErrorResponse implements JSONResponseProps<string> {
   data: string;
 
   constructor({ data }: Pick<JSONResponseProps<string>, 'data'>) {
-    this.statusCode = 200;
+    this.statusCode = 500;
     this.info = ResponseTypes.ERROR;
     this.data = data;
   }
@@ -42,7 +42,7 @@ export class JSONUnauthorizedResponse implements JSONResponseProps<string> {
   data: string;
 
   constructor() {
-    this.statusCode = 200;
+    this.statusCode = 401;
     this.info = ResponseTypes.UNAUTHORIZED;
     this.data = 'Request blocked, please check authentication keys';
   }
