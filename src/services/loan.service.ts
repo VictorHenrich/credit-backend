@@ -23,11 +23,18 @@ export default class LoanService {
   }
 
   async findMany({ company }: Pick<LoanBodyProps, 'company'>): Promise<Loan[]> {
-    return await this.loanRepository.find({ where: { company } });
+    return await this.loanRepository.find({
+      where: { company },
+      relations: ['company'],
+    });
   }
 
   async createLoan(props: LoanBodyProps): Promise<Loan> {
-    return await this.loanRepository.create(props);
+    const loan: Loan = this.loanRepository.create(props);
+
+    await this.loanRepository.save(loan);
+
+    return loan;
   }
 
   async updateLoan({

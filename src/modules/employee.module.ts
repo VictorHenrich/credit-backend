@@ -34,13 +34,15 @@ export default class EmployeesModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(EmployeeAuthMiddleware)
-      .forRoutes(
-        { path: '/employee', method: RequestMethod.PUT },
-        { path: '/employee', method: RequestMethod.DELETE },
-      );
+      .forRoutes({ path: '/employee', method: RequestMethod.PUT });
 
     consumer
       .apply(AgentAuthMiddleware)
-      .forRoutes({ path: '/employee', method: RequestMethod.GET });
+      .forRoutes(
+        { path: '/employee', method: RequestMethod.GET },
+        { path: '/employee', method: RequestMethod.POST },
+        { path: '/employee/:uuid', method: RequestMethod.PUT },
+        { path: '/employee/:uuid', method: RequestMethod.DELETE },
+      );
   }
 }

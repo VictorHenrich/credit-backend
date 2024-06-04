@@ -16,9 +16,18 @@ export default class EmployeeService {
   ) {}
 
   async createEmployee(props: EmployeeBodyProps): Promise<Employee> {
+    delete props['uuid'];
+
     const password: string = await CryptUtils.createHash(props.password);
 
-    return await this.employeeRepository.create({ ...props, password });
+    const employee: Employee = this.employeeRepository.create({
+      ...props,
+      password,
+    });
+
+    await this.employeeRepository.save(employee);
+
+    return employee;
   }
 
   async updateEmployee({
@@ -35,15 +44,8 @@ export default class EmployeeService {
     return employee;
   }
 
-  async deleteEmployee({
-    uuid,
-    company,
-  }: EmployeeFindingType): Promise<Employee> {
-    const employee: Employee = await this.findEmployee({ uuid, company });
-
-    await this.employeeRepository.remove(employee);
-
-    return employee;
+  async deleteEmployee({ uuid, company }: EmployeeFindingType): Promise<void> {
+    await this.employeeRepository.delete({ uuid, company });
   }
 
   async findEmployee({

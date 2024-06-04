@@ -37,6 +37,14 @@ export default class EmployeeLoanService {
     this.validateSalaryMargin(employee, value);
     this.validateScore(employee, loan);
 
-    return await this.employeeLoanRepository.create({ employee, loan, value });
+    const employeeLoan: EmployeeLoan = this.employeeLoanRepository.create({
+      employee,
+      loan,
+      value,
+    });
+
+    await this.employeeLoanRepository.save(employeeLoan);
+
+    return employeeLoan;
   }
 }

@@ -18,7 +18,11 @@ export default class AgentService {
   async createAgent(props: AgentBodyProps): Promise<Agent> {
     const password: string = await CryptUtils.createHash(props.password);
 
-    return await this.agentRepository.create({ ...props, password });
+    const agent: Agent = this.agentRepository.create({ ...props, password });
+
+    await this.agentRepository.save(agent);
+
+    return agent;
   }
 
   async updateAgent({
@@ -44,11 +48,14 @@ export default class AgentService {
   }
 
   async findAgent({ uuid, company }: AgentFindingType): Promise<Agent> {
-    try {
-      return await this.agentRepository.findOneByOrFail({ uuid, company });
-    } catch (error) {
-      throw new AgentNotFoundError(uuid);
-    }
+    const agent: Agent = await this.agentRepository.findOne({
+      where: { uuid, company },
+      relations: ['company'],
+    });
+
+    if (!agent) throw new AgentNotFoundError(uuid);
+
+    return agent;
   }
 
   async findManyAgent(): Promise<Agent[]> {

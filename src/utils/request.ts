@@ -6,7 +6,7 @@ import { ValidatedTokenDataProps } from 'src/services/authentication.interfaces'
 
 export default class RequestUtils {
   static get namePropDataToken(): string {
-    return 'tokenData';
+    return process.env.TOKEN_DATA_PROP_NAME;
   }
 
   static getCompanyInTokenData(request: Request): Company {

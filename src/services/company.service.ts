@@ -14,7 +14,11 @@ export default class CompanyService {
   ) {}
 
   async createCompany(props: CompanyBodyProps): Promise<Company> {
-    return await this.companyRepository.create({ ...props });
+    const company: Company = this.companyRepository.create({ ...props });
+
+    await this.companyRepository.save(company);
+
+    return company;
   }
 
   async updateCompany({

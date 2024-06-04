@@ -100,19 +100,47 @@ export default class EmployeeController {
     }
   }
 
-  @Delete()
-  async delete(@Req() request: Request, @Res() response: Response) {
+  @Put(':uuid')
+  async updateByUUID(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Body() body: EmployeeBodyParams,
+    @Param('uuid') uuid: string,
+  ): Promise<void> {
     try {
       const company: Company = RequestUtils.getCompanyInTokenData(request);
 
-      const { uuid }: Employee = RequestUtils.getEmployeeInTokenData(request);
+      const data: Employee = await this.employeerService.updateEmployee({
+        company,
+        uuid,
+        ...body,
+      });
 
-      const data: Employee = await this.employeerService.deleteEmployee({
+      return ResponseUtils.handleSuccessCase<Employee>(response, data);
+    } catch (error) {
+      return ResponseUtils.handleErrorCase(
+        response,
+        error,
+        EmployeeNotFoundError,
+      );
+    }
+  }
+
+  @Delete(':uuid')
+  async delete(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('uuid') uuid: string,
+  ) {
+    try {
+      const company: Company = RequestUtils.getCompanyInTokenData(request);
+
+      await this.employeerService.deleteEmployee({
         company,
         uuid,
       });
 
-      return ResponseUtils.handleSuccessCase<Employee>(response, data);
+      return ResponseUtils.handleSuccessCase<null>(response);
     } catch (error) {
       return ResponseUtils.handleErrorCase(
         response,

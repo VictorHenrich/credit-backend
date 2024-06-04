@@ -5,7 +5,7 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Agent } from 'http';
+import Agent from 'src/models/agent.entity';
 import CompanyController from 'src/controllers/company.controller';
 import AgentAuthMiddleware from 'src/middlewares/agentAuth.middleware';
 import Company from 'src/models/company.entity';
