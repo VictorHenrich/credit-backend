@@ -1,13 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { MicroserviceOptions } from '@nestjs/microservices';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const httpApp = await NestFactory.create(AppModule, { cors: true });
 
-  const ampqApp =
-    await NestFactory.createMicroservice<MicroserviceOptions>(AppModule);
+  const ampqApp = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.RMQ,
+      options: {
+        urls: [process.env.AMQP_URL],
+        queue: process.env.EMPLOYEE_LOAN_QUEUE_NAME,
+        queueOptions: {
+          durable: false,
+        },
+      },
+    },
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Credit API')

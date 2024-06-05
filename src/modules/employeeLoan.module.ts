@@ -41,6 +41,7 @@ import Company from 'src/models/company.entity';
           queue: process.env.EMPLOYEE_LOAN_QUEUE_NAME,
           queueOptions: {
             durable: false,
+            autoDelete: true,
           },
         },
       },
