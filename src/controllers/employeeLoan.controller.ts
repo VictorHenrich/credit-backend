@@ -22,9 +22,10 @@ export default class EmployeeLoanController {
     private readonly loanService: LoanService,
   ) {}
 
-  @MessagePattern({ cmd: process.env.NAME_LOAN_TRANSFER_EVENT })
+  @MessagePattern('transfer_loan_to_account')
   async transferLoanToAccount(@Payload() body: EmployeeLoan): Promise<void> {
     console.log('...ACESSANDO SERVIÇO DE MENSAGERIA...');
+    console.log('Dados da Mensageria: ', body);
 
     await this.employeeLoanService.transferLoanToAccount(body);
   }

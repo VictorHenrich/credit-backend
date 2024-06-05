@@ -13,7 +13,11 @@ import {
   EmployeeLoanBodyProps,
   EmployeeLoanFindProps,
 } from './employeeLoan.interfaces';
-import { ClientProxy } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  RmqRecord,
+  RmqRecordBuilder,
+} from '@nestjs/microservices';
 import { EmployeeLoanStatusType } from 'src/utils/types';
 
 @Injectable()
@@ -47,6 +51,12 @@ export default class EmployeeLoanService {
       numberInstallments > loan.maxInstallments
     )
       throw new ScoreNotReachedError(employee, loan);
+  }
+
+  private sendMessageToRmq<T>(pattern: string, data: T) {
+    const record: RmqRecord = new RmqRecordBuilder<T>(data).build();
+
+    this.rabbitClient.emit(pattern, record)//.subscribe();
   }
 
   async transferLoanToAccount(employeeLoan: EmployeeLoan): Promise<void> {
@@ -103,10 +113,7 @@ export default class EmployeeLoanService {
 
     await this.employeeLoanRepository.insert(employeeLoan);
 
-    await this.rabbitClient.send(
-      { cmd: process.env.NAME_LOAN_TRANSFER_EVENT },
-      employeeLoan,
-    );
+    this.sendMessageToRmq('transfer_loan_to_account', employeeLoan);
 
     return employeeLoan;
   }
