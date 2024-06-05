@@ -28,6 +28,7 @@ import EmployeeLoansModule from './modules/employeeLoan.module';
       database: process.env.DATABASE_NAME,
       synchronize: true,
       autoLoadEntities: true,
+      logging: true,
     }),
     CompaniesModule,
     EmployeesModule,

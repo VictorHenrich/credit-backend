@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import EmployeeLoan from 'src/models/employeeLoan.entity';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository } from 'typeorm';
 import Loan from 'src/models/loan.entity';
 import Employee from 'src/models/employee.entity';
 import {
   MarginExceededError,
   EmployeeNotReleasedForLoanError,
+  ScoreNotReachedError,
 } from 'src/utils/exceptions';
 import {
   EmployeeLoanBodyProps,
@@ -30,43 +31,35 @@ export default class EmployeeLoanService {
       throw new MarginExceededError(employee, loanValue);
   }
 
+  private validateLoanForEmployee(employee: Employee, loan: Loan) {
+    if (employee.salary < loan.minSalary || employee.score < loan.minScore)
+      throw new ScoreNotReachedError(employee, loan);
+  }
+
   async findReleasedLoans({
     employee,
-    findMany = true,
-  }: EmployeeLoanFindProps): Promise<Loan | Loan[]> {
-    const query: SelectQueryBuilder<Loan> = await this.loanRepository
+  }: EmployeeLoanFindProps): Promise<Loan[]> {
+    const loans: Loan[] = await this.loanRepository
       .createQueryBuilder('l')
+      .innerJoinAndSelect('l.company', 'company')
       .where({ company: employee.company })
       .where('l.minSalary <= :minSalary', { minSalary: employee.salary })
-      .where('l.minScore <= :minScore', { minScore: employee.score });
+      .where('l.minScore <= :minScore', { minScore: employee.score })
+      .getMany();
 
-    if (findMany) {
-      const loans: Loan[] = await query.getMany();
+    if (!loans.length) throw new EmployeeNotReleasedForLoanError(employee);
 
-      if (!loans.length) throw new EmployeeNotReleasedForLoanError(employee);
-
-      return loans;
-    }
-
-    const loan: Loan = await query.getOne();
-
-    if (!loan) throw new EmployeeNotReleasedForLoanError(employee);
-
-    return loan;
+    return loans;
   }
 
   async performLoan({
     employee,
+    loan,
     value,
   }: EmployeeLoanBodyProps): Promise<EmployeeLoan> {
     this.validateSalaryMargin(employee, value);
 
-    let loan: Loan | Loan[] = await this.findReleasedLoans({
-      employee,
-      findMany: false,
-    });
-
-    if (Array.isArray(loan)) [loan] = loan;
+    this.validateLoanForEmployee(employee, loan);
 
     const employeeLoan: EmployeeLoan = this.employeeLoanRepository.create({
       employee,

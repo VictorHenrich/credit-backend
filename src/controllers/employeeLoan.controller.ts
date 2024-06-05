@@ -11,10 +11,14 @@ import {
 import RequestUtils from 'src/utils/request';
 import ResponseUtils from 'src/utils/responses';
 import { EmployeeLoanBodyParams } from './employeeLoan.params';
+import LoanService from 'src/services/loan.service';
 
 @Controller('employee_loan')
 export default class EmployeeLoanController {
-  constructor(private readonly employeeLoanService: EmployeeLoanService) {}
+  constructor(
+    private readonly employeeLoanService: EmployeeLoanService,
+    private readonly loanService: LoanService,
+  ) {}
 
   @Get()
   async findReleasedLoans(
@@ -24,8 +28,9 @@ export default class EmployeeLoanController {
     const employee: Employee = RequestUtils.getEmployeeInTokenData(request);
 
     try {
-      const loans: Loan[] | Loan =
-        await this.employeeLoanService.findReleasedLoans({ employee });
+      const loans: Loan[] = await this.employeeLoanService.findReleasedLoans({
+        employee,
+      });
 
       ResponseUtils.handleSuccessCase<Loan[] | Loan>(response, loans);
     } catch (error) {
@@ -39,7 +44,7 @@ export default class EmployeeLoanController {
     }
   }
 
-  @Post()
+  @Post(':loanUuid')
   async performLoan(
     @Req() request: Request,
     @Res() response: Response,
@@ -49,7 +54,12 @@ export default class EmployeeLoanController {
     const employee: Employee = RequestUtils.getEmployeeInTokenData(request);
 
     try {
-      await this.employeeLoanService.performLoan({ ...body, employee });
+      const loan: Loan = await this.loanService.findLoan({
+        uuid,
+        company: employee.company,
+      });
+
+      await this.employeeLoanService.performLoan({ ...body, loan, employee });
 
       ResponseUtils.handleSuccessCase<null>(response);
     } catch (error) {

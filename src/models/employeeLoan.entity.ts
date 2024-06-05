@@ -10,6 +10,9 @@ export default class EmployeeLoan extends BaseModel {
   @Column({ nullable: false })
   value: number;
 
+  @Column({ nullable: false })
+  numberInstallments: number;
+
   @Column({ nullable: false, default: () => 'current_date' })
   created: Date;
 
