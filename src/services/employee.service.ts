@@ -35,6 +35,8 @@ export default class EmployeeService {
     company,
     ...props
   }: Omit<EmployeeEntityProps, 'email' | 'password'>): Promise<Employee> {
+    delete props["password"];
+    
     const employee: Employee = await this.findEmployee({ uuid, company });
 
     Object.assign(employee, { ...props, company: undefined });

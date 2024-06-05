@@ -37,8 +37,8 @@ export default class EmployeeLoanService {
     numberInstallments: number,
   ) {
     if (
-      employee.salary < loan.minSalary ||
-      employee.score < loan.minScore ||
+      loan.minSalary > employee.salary ||
+      loan.minScore > employee.score ||
       numberInstallments > loan.maxInstallments
     )
       throw new ScoreNotReachedError(employee, loan);
