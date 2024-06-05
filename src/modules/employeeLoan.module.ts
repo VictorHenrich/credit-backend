@@ -34,7 +34,7 @@ import Company from 'src/models/company.entity';
     TypeOrmModule.forFeature([EmployeeLoan, Loan, Employee, Agent, Company]),
     ClientsModule.register([
       {
-        name: process.env.EMPLOYEE_LOAN_SERVICE_NAME,
+        name: 'EMPLOYEE_LOAN_SERVICE',
         transport: Transport.RMQ,
         options: {
           urls: [process.env.AMQP_URL],

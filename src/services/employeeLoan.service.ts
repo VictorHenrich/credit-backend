@@ -25,7 +25,7 @@ export default class EmployeeLoanService {
     @InjectRepository(Loan)
     private readonly loanRepository: Repository<Loan>,
 
-    @Inject(process.env.EMPLOYEE_LOAN_SERVICE_NAME)
+    @Inject('EMPLOYEE_LOAN_SERVICE')
     private readonly rabbitClient: ClientProxy,
   ) {}
 
