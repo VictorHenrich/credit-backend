@@ -1,10 +1,5 @@
 import { Response } from 'express';
-
-export enum ResponseTypes {
-  SUCCESS = 'success',
-  ERROR = 'error',
-  UNAUTHORIZED = 'unauthorized',
-}
+import { ResponseTypes } from './types';
 
 export interface JSONResponseProps<T> {
   statusCode: number;

@@ -1,5 +1,6 @@
 import { Controller, Res, Req, Post, Param, Body, Get } from '@nestjs/common';
 import { Response, Request } from 'express';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import Employee from 'src/models/employee.entity';
 import Loan from 'src/models/loan.entity';
 import EmployeeLoanService from 'src/services/employeeLoan.service';
@@ -20,6 +21,13 @@ export default class EmployeeLoanController {
     private readonly employeeLoanService: EmployeeLoanService,
     private readonly loanService: LoanService,
   ) {}
+
+  @MessagePattern({ cmd: 'transfer_loan_to_account' })
+  async transferLoanToAccount(@Payload() body: EmployeeLoan): Promise<void> {
+    console.log('...ACESSANDO SERVIÇO DE MENSAGERIA...');
+
+    await this.employeeLoanService.transferLoanToAccount(body);
+  }
 
   @Get('released')
   async findReleasedLoans(

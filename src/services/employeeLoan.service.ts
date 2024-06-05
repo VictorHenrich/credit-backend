@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import EmployeeLoan from 'src/models/employeeLoan.entity';
 import { Repository } from 'typeorm';
@@ -13,6 +13,8 @@ import {
   EmployeeLoanBodyProps,
   EmployeeLoanFindProps,
 } from './employeeLoan.interfaces';
+import { ClientProxy } from '@nestjs/microservices';
+import { EmployeeLoanStatusType } from 'src/utils/types';
 
 @Injectable()
 export default class EmployeeLoanService {
@@ -22,6 +24,9 @@ export default class EmployeeLoanService {
 
     @InjectRepository(Loan)
     private readonly loanRepository: Repository<Loan>,
+
+    @Inject('EMPLOYEE_LOAN_SERVICE')
+    private readonly rabbitClient: ClientProxy,
   ) {}
 
   private validateSalaryMargin(employee: Employee, loanValue: number) {
@@ -42,6 +47,16 @@ export default class EmployeeLoanService {
       numberInstallments > loan.maxInstallments
     )
       throw new ScoreNotReachedError(employee, loan);
+  }
+
+  async transferLoanToAccount(employeeLoan: EmployeeLoan): Promise<void> {
+    try {
+      employeeLoan.status = EmployeeLoanStatusType.SUCCESS;
+    } catch (error) {
+      employeeLoan.status = EmployeeLoanStatusType.ERROR;
+    }
+
+    await this.employeeLoanRepository.save(employeeLoan);
   }
 
   async findManyLoans({
@@ -87,6 +102,11 @@ export default class EmployeeLoanService {
     });
 
     await this.employeeLoanRepository.insert(employeeLoan);
+
+    await this.rabbitClient.send(
+      { cmd: 'transfer_loan_to_account' },
+      employeeLoan,
+    );
 
     return employeeLoan;
   }

@@ -5,6 +5,7 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import EmployeeAuthMiddleware from 'src/middlewares/employeeAuth.middleware';
 import EmployeeLoanController from 'src/controllers/employeeLoan.controller';
 import EmployeeLoanService from 'src/services/employeeLoan.service';
@@ -31,6 +32,19 @@ import Company from 'src/models/company.entity';
   ],
   imports: [
     TypeOrmModule.forFeature([EmployeeLoan, Loan, Employee, Agent, Company]),
+    ClientsModule.register([
+      {
+        name: 'EMPLOYEE_LOAN_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.AMQP_URL],
+          queue: process.env.EMPLOYEE_LOAN_QUEUE_NAME,
+          queueOptions: {
+            durable: false,
+          },
+        },
+      },
+    ]),
   ],
 })
 export default class EmployeeLoansModule implements NestModule {

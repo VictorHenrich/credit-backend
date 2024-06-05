@@ -1,9 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const httpApp = await NestFactory.create(AppModule, { cors: true });
+
+  const ampqApp =
+    await NestFactory.createMicroservice<MicroserviceOptions>(AppModule);
 
   const config = new DocumentBuilder()
     .setTitle('Credit API')
@@ -11,10 +15,10 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(httpApp, config);
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', httpApp, document);
 
-  await app.listen(process.env.API_PORT);
+  await Promise.all([httpApp.listen(process.env.API_PORT), ampqApp.listen()]);
 }
 bootstrap();
