@@ -28,7 +28,6 @@ export default class AgentAuthMiddleware implements NestMiddleware {
 
       next();
     } catch (error) {
-      throw error;
       const unauthorizedResponse: JSONResponseProps<string> =
         new JSONUnauthorizedResponse();
 

@@ -74,9 +74,9 @@ export default class EmployeeLoanService {
     const loans: Loan[] = await this.loanRepository
       .createQueryBuilder('l')
       .innerJoinAndSelect('l.company', 'company')
-      .where({ company: employee.company })
-      .where('l.minSalary <= :minSalary', { minSalary: employee.salary })
-      .where('l.minScore <= :minScore', { minScore: employee.score })
+      .andWhere({ company: employee.company })
+      .andWhere('l.minSalary <= :minSalary', { minSalary: employee.salary })
+      .andWhere('l.minScore <= :minScore', { minScore: employee.score })
       .getMany();
 
     if (!loans.length) throw new EmployeeNotReleasedForLoanError(employee);

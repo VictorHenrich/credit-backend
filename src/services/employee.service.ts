@@ -54,11 +54,14 @@ export default class EmployeeService {
     uuid,
     company,
   }: EmployeeFindingType): Promise<Employee> {
-    try {
-      return await this.employeeRepository.findOneByOrFail({ uuid, company });
-    } catch (error) {
-      throw new EmployeeNotFoundError(uuid);
-    }
+    const employee: Employee = await this.employeeRepository.findOne({
+      where: { uuid, company },
+      relations: ['company'],
+    });
+
+    if (!employee) throw new EmployeeNotFoundError(uuid);
+
+    return employee;
   }
 
   async findManyEmployee({
