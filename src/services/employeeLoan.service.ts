@@ -104,7 +104,7 @@ export default class EmployeeLoanService {
     await this.employeeLoanRepository.insert(employeeLoan);
 
     await this.rabbitClient.send(
-      { cmd: 'transfer_loan_to_account' },
+      { cmd: process.env.NAME_LOAN_TRANSFER_EVENT },
       employeeLoan,
     );
 
