@@ -38,7 +38,8 @@ export default class EmployeeLoansModule implements NestModule {
     consumer
       .apply(EmployeeAuthMiddleware)
       .forRoutes(
-        { path: '/employee_loan', method: RequestMethod.GET },
+        { path: '/employee_loan/released', method: RequestMethod.GET },
+        { path: '/employee_loan/all', method: RequestMethod.GET },
         { path: '/employee_loan/:loanUuid', method: RequestMethod.POST },
       );
   }

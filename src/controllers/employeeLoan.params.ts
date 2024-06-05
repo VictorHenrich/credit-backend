@@ -6,4 +6,7 @@ export class EmployeeLoanBodyParams
 {
   @ApiProperty()
   value: number;
+
+  @ApiProperty()
+  numberInstallments: number;
 }

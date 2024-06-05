@@ -12,6 +12,7 @@ import RequestUtils from 'src/utils/request';
 import ResponseUtils from 'src/utils/responses';
 import { EmployeeLoanBodyParams } from './employeeLoan.params';
 import LoanService from 'src/services/loan.service';
+import EmployeeLoan from 'src/models/employeeLoan.entity';
 
 @Controller('employee_loan')
 export default class EmployeeLoanController {
@@ -20,7 +21,7 @@ export default class EmployeeLoanController {
     private readonly loanService: LoanService,
   ) {}
 
-  @Get()
+  @Get('released')
   async findReleasedLoans(
     @Req() request: Request,
     @Res() response: Response,
@@ -33,6 +34,31 @@ export default class EmployeeLoanController {
       });
 
       ResponseUtils.handleSuccessCase<Loan[] | Loan>(response, loans);
+    } catch (error) {
+      ResponseUtils.handleErrorCase(
+        response,
+        error,
+        LoanNotFoundError,
+        MarginExceededError,
+        ScoreNotReachedError,
+      );
+    }
+  }
+
+  @Get('all')
+  async findMany(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const employee: Employee = RequestUtils.getEmployeeInTokenData(request);
+
+    try {
+      const loans: EmployeeLoan[] =
+        await this.employeeLoanService.findManyLoans({
+          employee,
+        });
+
+      ResponseUtils.handleSuccessCase<EmployeeLoan[]>(response, loans);
     } catch (error) {
       ResponseUtils.handleErrorCase(
         response,

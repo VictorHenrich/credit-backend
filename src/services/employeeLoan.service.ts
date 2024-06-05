@@ -31,9 +31,26 @@ export default class EmployeeLoanService {
       throw new MarginExceededError(employee, loanValue);
   }
 
-  private validateLoanForEmployee(employee: Employee, loan: Loan) {
-    if (employee.salary < loan.minSalary || employee.score < loan.minScore)
+  private validateLoanForEmployee(
+    employee: Employee,
+    loan: Loan,
+    numberInstallments: number,
+  ) {
+    if (
+      employee.salary < loan.minSalary ||
+      employee.score < loan.minScore ||
+      numberInstallments > loan.maxInstallments
+    )
       throw new ScoreNotReachedError(employee, loan);
+  }
+
+  async findManyLoans({
+    employee,
+  }: EmployeeLoanFindProps): Promise<EmployeeLoan[]> {
+    return await this.employeeLoanRepository.find({
+      where: { employee },
+      relations: ['employee', 'loan'],
+    });
   }
 
   async findReleasedLoans({
@@ -56,15 +73,17 @@ export default class EmployeeLoanService {
     employee,
     loan,
     value,
+    numberInstallments,
   }: EmployeeLoanBodyProps): Promise<EmployeeLoan> {
     this.validateSalaryMargin(employee, value);
 
-    this.validateLoanForEmployee(employee, loan);
+    this.validateLoanForEmployee(employee, loan, numberInstallments);
 
     const employeeLoan: EmployeeLoan = this.employeeLoanRepository.create({
       employee,
       loan,
       value,
+      numberInstallments,
     });
 
     await this.employeeLoanRepository.insert(employeeLoan);

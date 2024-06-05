@@ -6,11 +6,11 @@ export interface EmployeeLoanBodyProps {
   employee: Employee;
   loan: Loan;
   value: number;
+  numberInstallments: number;
 }
 
 export interface EmployeeLoanFindProps {
   employee: Employee;
-  findMany?: boolean;
 }
 
 export interface EmployeeLoanEntityProps
